@@ -6,7 +6,43 @@ import { useWindowResize } from "./useWindowSize";
 let NODE_WIDTH = "96px";
 const NODE_HEIGHT = "96px";
 
-function NodeDisplay({
+function Node({ value }: { value: string }) {
+  return (
+    <div
+      className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full bg-gray-600"
+      style={{
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+      }}
+    >
+      <p className="break-words">{value}</p>
+    </div>
+  );
+}
+
+function NodeForest({
+  node,
+  parentRef,
+}: {
+  node: TreeNode;
+  parentRef: React.RefObject<HTMLDivElement> | null;
+}) {
+  return (
+    <>
+      {node.children && node.children.length > 0 && (
+        <div className="flex gap-x-4">
+          {node.children.map((child, index) => (
+            <div id={`${node.value}-children-${index}`} key={child.value}>
+              <NodeTree node={child} parentRef={parentRef} />
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function NodeTree({
   node,
   parentRef,
 }: {
@@ -32,44 +68,28 @@ function NodeDisplay({
     }
   }, [nodeRef, parentRef, width, height]);
 
+  const hasChildren = node.children?.length > 0;
+
   return (
     <div id={node.value} className="flex flex-col items-center">
-      <div
-        ref={nodeRef}
-        id={`${node.value}-node`}
-        className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full bg-gray-600"
-        style={{
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-        }}
-      >
-        <p className="break-words">{node.value}</p>
+      <div ref={nodeRef} id={`${node.value}-node`}>
+        <Node value={node.value} />
       </div>
-      {/* <hr className="border-4 h-4 w-full" /> */}
       <Line fromRect={fromRect} toRect={toRect} />
-      {node.children && node.children.length > 0 && (
-        <div className="flex gap-x-4">
-          {node.children.map((child, index) => (
-            <div id={`${node.value}-children-${index}`} key={child.value}>
-              <NodeDisplay node={child} parentRef={nodeRef} />
-            </div>
-          ))}
-        </div>
-      )}
+      {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
     </div>
   );
 }
 
 function TreeGraph({ tree }: { tree: Tree }) {
-
   const [width, height] = useWindowResize();
 
-  // NODE_WIDTH = width / (5 + tree.largestLevelSize()) + 'px';
-
-  return <div className="w-full flex justify-center">{renderNode(tree.root)}</div>;
+  return (
+    <div className="w-full flex justify-center">{renderNode(tree.root)}</div>
+  );
 
   function renderNode(node: TreeNode) {
-    return <NodeDisplay key={node.value} node={node} parentRef={null} />;
+    return <NodeTree key={node.value} node={node} parentRef={null} />;
   }
 }
 
