@@ -47,9 +47,10 @@ function showTree() {
 function App() {
   const tree = createTreeObj();
 
-  return <div className="mt-40">
+  return <div className="m-40">
     {/* <div className="mt-5 text-center">{showTree()}</div> */}
     <h1>Max size: {tree.largestLevelSize()}</h1>
+    <Button variant="contained">Hello World</Button>
     <TreeGraph tree={tree} />
   </div>
 }
