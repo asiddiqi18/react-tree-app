@@ -6,83 +6,84 @@ import { useWindowResize } from "./useWindowSize";
 let NODE_WIDTH = "96px";
 const NODE_HEIGHT = "96px";
 
-function Node({ value }: { value: string }) {
-  return (
-    <div
-      className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full bg-gray-600"
-      style={{
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-      }}
-    >
-      <p className="break-words">{value}</p>
-    </div>
-  );
-}
+function TreeGraph({ tree, onNodeClick }: { tree: Tree, onNodeClick: (node: TreeNode) => void }) {
+  const [_width, _height] = useWindowResize();
 
-function NodeForest({
-  node,
-  parentRef,
-}: {
-  node: TreeNode;
-  parentRef: React.RefObject<HTMLDivElement> | null;
-}) {
-  return (
-    <>
-      {node.children && node.children.length > 0 && (
-        <div className="flex gap-x-4">
-          {node.children.map((child, index) => (
-            <div id={`${node.value}-children-${index}`} key={child.value}>
-              <NodeTree node={child} parentRef={parentRef} />
-            </div>
-          ))}
-        </div>
-      )}
-    </>
-  );
-}
-
-function NodeTree({
-  node,
-  parentRef,
-}: {
-  node: TreeNode;
-  parentRef: React.RefObject<HTMLDivElement> | null;
-}) {
-  const nodeRef = useRef<HTMLDivElement>(null);
-
-  const [fromRect, setFromRect] = useState<DOMRect | null>(null);
-  const [toRect, setToRect] = useState<DOMRect | null>(null);
-  const [width, height] = useWindowResize();
-
-  useEffect(() => {
-    if (!parentRef) {
-      console.log(`No parent (${nodeRef.current?.id}) skipping...`);
-      return;
-    }
-    if (nodeRef.current) {
-      setToRect(nodeRef.current.getBoundingClientRect());
-    }
-    if (parentRef.current) {
-      setFromRect(parentRef.current.getBoundingClientRect());
-    }
-  }, [nodeRef, parentRef, width, height]);
-
-  const hasChildren = node.children?.length > 0;
-
-  return (
-    <div id={node.value} className="flex flex-col items-center">
-      <div ref={nodeRef} id={`${node.value}-node`}>
-        <Node value={node.value} />
+  function Node({ node }: { node: TreeNode }) {
+    return (
+      <div
+        className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full bg-gray-600 cursor-pointer"
+        style={{
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
+        }}
+        onClick={() => onNodeClick(node)}
+      >
+        <p className="break-words">{node.value}</p>
       </div>
-      <Line fromRect={fromRect} toRect={toRect} />
-      {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
-    </div>
-  );
-}
-
-function TreeGraph({ tree }: { tree: Tree }) {
-  const [width, height] = useWindowResize();
+    );
+  }
+  
+  function NodeForest({
+    node,
+    parentRef,
+  }: {
+    node: TreeNode;
+    parentRef: React.RefObject<HTMLDivElement> | null;
+  }) {
+    return (
+      <>
+        {node.children && node.children.length > 0 && (
+          <div className="flex gap-x-4">
+            {node.children.map((child, index) => (
+              <div id={`${node.value}-children-${index}`} key={child.value}>
+                <NodeTree node={child} parentRef={parentRef} />
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  }
+  
+  function NodeTree({
+    node,
+    parentRef,
+  }: {
+    node: TreeNode;
+    parentRef: React.RefObject<HTMLDivElement> | null;
+  }) {
+    const nodeRef = useRef<HTMLDivElement>(null);
+  
+    const [fromRect, setFromRect] = useState<DOMRect | null>(null);
+    const [toRect, setToRect] = useState<DOMRect | null>(null);
+    const [width, height] = useWindowResize();
+  
+    useEffect(() => {
+      if (!parentRef) {
+        // console.log(`No parent (${nodeRef.current?.id}) skipping...`);
+        return;
+      }
+      if (nodeRef.current) {
+        setToRect(nodeRef.current.getBoundingClientRect());
+      }
+      if (parentRef.current) {
+        setFromRect(parentRef.current.getBoundingClientRect());
+      }
+    }, [nodeRef, parentRef, width, height]);
+  
+    const hasChildren = node.children?.length > 0;
+  
+    return (
+      <div id={node.value} className="flex flex-col items-center">
+        <div ref={nodeRef} id={`${node.value}-node`}>
+          <Node node={node} />
+        </div>
+        <Line fromRect={fromRect} toRect={toRect} />
+        {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex justify-center">{renderNode(tree.root)}</div>

@@ -1,10 +1,17 @@
 import _ from "lodash";
 
+interface TreeID {
+  id: number,
+  node: TreeNode,
+}
+
 export class TreeNode {
+  id: number;
   value: any;
   children: TreeNode[];
 
-  constructor(value: any, children = []) {
+  constructor(id: number, value: any, children = []) {
+    this.id = id;
     this.value = value;
     this.children = children;
   }
@@ -21,15 +28,34 @@ export class TreeNode {
 
 export class Tree {
   root: TreeNode;
+  nodes: TreeID[];
+  nextId: number;
 
   constructor(value: any) {
-    this.root = new TreeNode(value);
+    this.root = new TreeNode(0, value);
+    this.nodes = [{id: 0, node: this.root}];
+    this.nextId = 0;
   }
 
   addNode(parent: TreeNode, value: any): TreeNode {
-    const node = new TreeNode(value);
+    const node = new TreeNode(++this.nextId, value);
     parent.children.push(node);
+    this.nodes.push({id: this.nextId, node: node});
     return node;
+  }
+
+  updateNode(node: TreeNode, newValue: any): void {
+
+    const foundNode = this.nodes.find((it) => it.id === node.id);
+
+    if (foundNode) {
+      foundNode.node.value = newValue; 
+    }
+
+  }
+
+  listNodes(): TreeID[] {
+    return this.nodes;
   }
 
   BFS(): TreeNode[][] {
