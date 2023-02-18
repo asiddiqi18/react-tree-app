@@ -49,7 +49,8 @@ function App() {
 
   return <div className="mt-40">
     {/* <div className="mt-5 text-center">{showTree()}</div> */}
-    <TreeGraph root={tree.root} />
+    <h1>Max size: {tree.largestLevelSize()}</h1>
+    <TreeGraph tree={tree} />
   </div>
 }
 

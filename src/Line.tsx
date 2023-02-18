@@ -47,7 +47,7 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect }) => {
   };
 
   return (
-    <div style={style}>
+    <div className="line" style={style}>
       <svg style={svgStyle}>
         <path d={`M ${x1} ${y1} L ${x2} ${y2}`} style={pathStyle} />
       </svg>

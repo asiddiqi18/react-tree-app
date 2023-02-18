@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export class TreeNode {
   value: any;
   children: TreeNode[];
@@ -44,6 +46,11 @@ export class Tree {
       result.push(levelNodes);
     }
     return result;
+  }
+
+  largestLevelSize(): number {
+    const BFS = this.BFS();
+    return _.max(BFS.map((lst) => lst.length)) ?? 0
   }
 
   toString(): string {
