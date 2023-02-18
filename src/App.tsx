@@ -57,7 +57,6 @@ function App() {
   }, []);
 
   const handleNodeClick = (node: TreeNode) => {
-    console.log(tree?.listNodes());
     setSelectedNode(node);
   };
 
