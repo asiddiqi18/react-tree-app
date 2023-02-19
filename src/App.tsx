@@ -1,17 +1,18 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { Tree, TreeNode } from "./tree";
 import TreeGraph from "./TreeGraph";
-import Button from "@mui/material/Button";
-import { Divider, Drawer, IconButton, TextField, Toolbar } from "@mui/material";
-import { MuiColorInput, matchIsValidColor } from "mui-color-input";
+import {
+  Divider,
+  Drawer,
+  Fab,
+  IconButton,
+  Toolbar,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { Email } from "@mui/icons-material";
-import { Stack } from "@mui/system";
-
+import ClearIcon from "@mui/icons-material/Clear";
+import ListIcon from '@mui/icons-material/List';
+import EditNodeForm, { FormInputs } from "./EditNodeForm";
 // custom lines
 // import / export / save data
 // export graph as png
@@ -53,16 +54,6 @@ function createTreeObj() {
   return tree;
 }
 
-const schema = yup.object().shape({
-  value: yup.string().required("value is required"),
-});
-
-type FormInputs = {
-  value: string;
-  backgroundColor: string;
-  textColor: string;
-};
-
 function App() {
   const drawerWidth = 400;
 
@@ -80,20 +71,15 @@ function App() {
     setDrawerOpen(false);
   };
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormInputs>({
-    resolver: yupResolver(schema),
-  });
-
   const onSubmit = (data: FormInputs) => {
     console.log(data);
     if (selectedNode && tree) {
       const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.updateNode(selectedNode, {value: data.value, backgroundColor: data.backgroundColor, textColor: data.textColor});
+      updatedTree.updateNode(selectedNode, {
+        value: data.value,
+        backgroundColor: data.backgroundColor,
+        textColor: data.textColor,
+      });
       setTree(updatedTree);
       setSelectedNode({
         ...selectedNode,
@@ -113,28 +99,31 @@ function App() {
     (node: TreeNode) => {
       setSelectedNode(node);
       handleDrawerOpen();
-      setValue("value", node.value);
-      setValue("backgroundColor", node.backgroundColor);
-      setValue("textColor", node.textColor);
     },
     [tree]
   );
 
-  const handleAddNode = useCallback((node: TreeNode) => {
-    if (tree) {
-      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.addNode(node, "new");
-      setTree(updatedTree);
-    }
-  }, [tree]);
+  const handleAddNode = useCallback(
+    (node: TreeNode) => {
+      if (tree) {
+        const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+        updatedTree.addNode(node, "new");
+        setTree(updatedTree);
+      }
+    },
+    [tree]
+  );
 
-  const handleInvertNode = useCallback((node: TreeNode) => {
-    if (tree) {
-      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.invertSubtree(node);
-      setTree(updatedTree);
-    }
-  }, [tree]);  
+  const handleInvertNode = useCallback(
+    (node: TreeNode) => {
+      if (tree) {
+        const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+        updatedTree.invertSubtree(node);
+        setTree(updatedTree);
+      }
+    },
+    [tree]
+  );
 
   const handleDeleteNode = (node: TreeNode) => {
     if (tree) {
@@ -144,116 +133,64 @@ function App() {
       setSelectedNode(undefined);
       handleDrawerClose();
     }
-  }
+  };
 
   return (
-    <div className="m-40">
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
+    <>
+      <div className="m-40">
+        <Drawer
+          sx={{
             width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-        variant="persistent"
-        anchor="right"
-        open={drawerOpen}
-      >
-        <Toolbar>
-          <div className="w-full flex justify-between items-center">
-            <h1>Modify Node</h1>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerClose}
-              edge="start"
-            >
-              <CloseIcon />
-            </IconButton>
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
+          }}
+          variant="persistent"
+          anchor="right"
+          open={drawerOpen}
+        >
+          <Toolbar>
+            <div className="w-full flex justify-between items-center">
+              <h1>Modify Node</h1>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerClose}
+                edge="start"
+              >
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Toolbar>
+          <Divider className="mt-12" />
+          <div className="mx-5 my-12">
+            <EditNodeForm selectedNode={selectedNode} onSubmit={onSubmit} onDelete={handleDeleteNode} onInvert={handleInvertNode} />
           </div>
-        </Toolbar>
-        <Divider className="mt-12" />
-        <div className="mx-5 my-12">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={3}>
-              <Controller
-                name="value"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Name"
-                    className="my-3"
-                    error={!!errors.value}
-                    helperText={errors.value?.message}
-                    fullWidth
-                    margin="normal"
-                  />
-                )}
-              />
-              <Controller
-                name="backgroundColor"
-                control={control}
-                defaultValue="#ffffff"
-                rules={{ validate: matchIsValidColor }}
-                render={({ field, fieldState }) => (
-                  <MuiColorInput
-                    {...field}
-                    label="Background color"
-                    className="my-3"
-                    isAlphaHidden
-                    format="hex"
-                    helperText={fieldState.invalid ? "Color is invalid" : ""}
-                    error={fieldState.invalid}
-                  />
-                )}
-              />
-              <Controller
-                name="textColor"
-                control={control}
-                defaultValue="#ffffff"
-                rules={{ validate: matchIsValidColor }}
-                render={({ field, fieldState }) => (
-                  <MuiColorInput
-                    {...field}
-                    label="Text color"
-                    className="my-3"
-                    isAlphaHidden
-                    format="hex"
-                    helperText={fieldState.invalid ? "Color is invalid" : ""}
-                    error={fieldState.invalid}
-                  />
-                )}
-              />              
-              <Button variant="contained" color="success" onClick={() => {
-                if (selectedNode) {
-                  handleInvertNode(selectedNode);
-                }
-              }} >Invert</Button>
-              <Button variant="contained" color="error" onClick={() => {
-                if (selectedNode) {
-                  handleDeleteNode(selectedNode);
-                }
-              }} >Delete</Button>
-              <Button type="submit" variant="contained" color="primary">
-                Submit
-              </Button>
-            </Stack>
-          </form>
+        </Drawer>
+        {tree && (
+          <TreeGraph
+            onNodeClick={handleNodeClick}
+            onAddNode={handleAddNode}
+            tree={tree}
+          />
+        )}
+      </div>
+      <div style={{ position: "fixed", bottom: "16px", left: "16px" }}>
+        <div className="flex gap-5">
+          <Fab
+            color="error"
+            onClick={() => tree && handleDeleteNode(tree.root)}
+          >
+            <ClearIcon />
+          </Fab>
+          <Fab color="info">
+            <ListIcon />
+          </Fab>
         </div>
-      </Drawer>
-
-      {tree && (
-        <TreeGraph
-          onNodeClick={handleNodeClick}
-          onAddNode={handleAddNode}
-          tree={tree}
-        />
-      )}
-    </div>
+      </div>
+    </>
   );
 }
 

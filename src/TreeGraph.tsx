@@ -4,6 +4,7 @@ import Line from "./Line";
 import { useWindowResize } from "./useWindowSize";
 import { IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { BorderColor } from "@mui/icons-material";
 let NODE_WIDTH = "96px";
 const NODE_HEIGHT = "96px";
 
@@ -23,7 +24,6 @@ function TreeGraph({
 
     const handlePlusClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      console.log("clicked")
       onAddNode(node);
     }
 
@@ -35,6 +35,9 @@ function TreeGraph({
           height: NODE_HEIGHT,
           backgroundColor: node.backgroundColor,
           color: node.textColor,
+          // borderStyle: 'inset',
+          // borderWidth: 4,
+          // borderColor: 'red',
         }}
         onClick={() => onNodeClick(node)}
         onMouseEnter={() => setHover(true)}

@@ -53,6 +53,8 @@ export class Tree {
     if (parent) {
       parent.children = parent.children.filter((child) => child.id !== node.id);
       this.nodes.delete(node.id);
+    } else {
+      node.children = [];
     }
   }
 
