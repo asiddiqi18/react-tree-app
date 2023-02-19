@@ -121,6 +121,24 @@ function App() {
     }
   }, [tree]);
 
+  const handleInvertNode = useCallback((node: TreeNode) => {
+    if (tree) {
+      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+      updatedTree.invertSubtree(node);
+      setTree(updatedTree);
+    }
+  }, [tree]);  
+
+  const handleDeleteNode = (node: TreeNode) => {
+    if (tree) {
+      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+      updatedTree.removeNode(node);
+      setTree(updatedTree);
+      setSelectedNode(undefined);
+      handleDrawerClose();
+    }
+  }
+
   return (
     <div className="m-40">
       <Drawer
@@ -186,7 +204,16 @@ function App() {
                   />
                 )}
               />
-
+              <Button variant="contained" color="success" onClick={() => {
+                if (selectedNode) {
+                  handleInvertNode(selectedNode);
+                }
+              }} >Invert</Button>
+              <Button variant="contained" color="error" onClick={() => {
+                if (selectedNode) {
+                  handleDeleteNode(selectedNode);
+                }
+              }} >Delete</Button>
               <Button type="submit" variant="contained" color="primary">
                 Submit
               </Button>

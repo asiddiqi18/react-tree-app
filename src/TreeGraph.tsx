@@ -51,7 +51,7 @@ function TreeGraph({
                 color="success"
                 sx={{
                   "&:hover": {
-                    backgroundColor: 'lightblue'
+                    backgroundColor: '#81c784'
                   },
                   height: 16,
                   width: 16,
