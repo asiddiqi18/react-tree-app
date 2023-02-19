@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect } from "react";
 
 type Props = {
   fromRect: DOMRect | null;
@@ -24,7 +24,7 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect }) => {
   const style: CSSProperties = {
     position: "absolute",
     left: left,
-    top: top,
+    top: top + window.pageYOffset,
     width: width,
     height: height,
     pointerEvents: "none",
