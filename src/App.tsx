@@ -5,7 +5,7 @@ import TreeGraph from "./TreeGraph";
 import Button from "@mui/material/Button";
 import { Divider, Drawer, IconButton, TextField, Toolbar } from "@mui/material";
 import { MuiColorInput, matchIsValidColor } from "mui-color-input";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -66,7 +66,7 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   console.log(drawerOpen);
-  
+
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -85,12 +85,16 @@ function App() {
   });
 
   const onSubmit = (data: FormInputs) => {
-    console.log(data)
+    console.log(data);
     if (selectedNode && tree) {
       const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
       updatedTree.updateNode(selectedNode, data.value, data.color);
       setTree(updatedTree);
-      setSelectedNode({ ...selectedNode, value: data.value, color: data.color });
+      setSelectedNode({
+        ...selectedNode,
+        value: data.value,
+        color: data.color,
+      });
     }
   };
 
@@ -99,11 +103,22 @@ function App() {
     setTree(treeObj);
   }, []);
 
-  const handleNodeClick = useCallback((node: TreeNode) => {
-    setSelectedNode(node);
-    handleDrawerOpen();
-    setValue("value", node.value);
-    setValue("color", node.color);
+  const handleNodeClick = useCallback(
+    (node: TreeNode) => {
+      setSelectedNode(node);
+      handleDrawerOpen();
+      setValue("value", node.value);
+      setValue("color", node.color);
+    },
+    [tree]
+  );
+
+  const handleAddNode = useCallback((node: TreeNode) => {
+    if (tree) {
+      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+      updatedTree.addNode(node, "new");
+      setTree(updatedTree);
+    }
   }, [tree]);
 
   return (
@@ -132,56 +147,61 @@ function App() {
             >
               <CloseIcon />
             </IconButton>
-          </div>       
-          </Toolbar>
+          </div>
+        </Toolbar>
         <Divider className="mt-12" />
         <div className="mx-5 my-12">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>
-            <Controller
-              name="value"
-              control={control}
-              defaultValue=''
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Name"
-                  className="my-3"
-                  error={!!errors.value}
-                  helperText={errors.value?.message}
-                  fullWidth
-                  margin="normal"
-                />
-              )}
-            />
-            <Controller
-              name="color"
-              control={control}
-              defaultValue='#ffffff'
-              rules={{ validate: matchIsValidColor }}
-              render={({ field, fieldState }) => (
-                <MuiColorInput
-                  {...field}
-                  label="Background color"
-                  className="my-3"
-                  isAlphaHidden
-                  format="hex"
-                  helperText={fieldState.invalid ? "Color is invalid" : ""}
-                  error={fieldState.invalid}
-                />
-              )}
-            />            
+              <Controller
+                name="value"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Name"
+                    className="my-3"
+                    error={!!errors.value}
+                    helperText={errors.value?.message}
+                    fullWidth
+                    margin="normal"
+                  />
+                )}
+              />
+              <Controller
+                name="color"
+                control={control}
+                defaultValue="#ffffff"
+                rules={{ validate: matchIsValidColor }}
+                render={({ field, fieldState }) => (
+                  <MuiColorInput
+                    {...field}
+                    label="Background color"
+                    className="my-3"
+                    isAlphaHidden
+                    format="hex"
+                    helperText={fieldState.invalid ? "Color is invalid" : ""}
+                    error={fieldState.invalid}
+                  />
+                )}
+              />
 
-            <Button type="submit" variant="contained" color="primary">
-              Submit
-            </Button>
-            </Stack>            
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </Stack>
           </form>
-
         </div>
       </Drawer>
 
-      {tree && <TreeGraph onNodeClick={(handleNodeClick)} tree={tree} />}
+      {tree && (
+        <TreeGraph
+          onNodeClick={handleNodeClick}
+          onAddNode={handleAddNode}
+          tree={tree}
+        />
+      )}
     </div>
   );
 }
