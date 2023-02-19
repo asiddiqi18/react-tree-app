@@ -33,7 +33,8 @@ function TreeGraph({
         style={{
           width: NODE_WIDTH,
           height: NODE_HEIGHT,
-          backgroundColor: node.color,
+          backgroundColor: node.backgroundColor,
+          color: node.textColor,
         }}
         onClick={() => onNodeClick(node)}
         onMouseEnter={() => setHover(true)}

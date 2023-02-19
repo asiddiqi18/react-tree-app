@@ -1,15 +1,23 @@
 export class TreeNode {
   id: number;
   value: string;
-  color: string;
+  backgroundColor: string;
+  textColor: string;
   children: TreeNode[];
 
   constructor(id: number, value: string, children = []) {
     this.id = id;
     this.value = value;
-    this.color = "#a5d6a7";
+    this.backgroundColor = "#a5d6a7";
+    this.textColor = "#000000";
     this.children = children;
   }
+}
+
+export type TreeMeta = {
+  value: string,
+  backgroundColor: string,
+  textColor: string,
 }
 
 export class Tree {
@@ -52,11 +60,12 @@ export class Tree {
     return this.nodes.get(node.id);
   }
 
-  updateNode(node: TreeNode, newValue: any, newColor: any): void {
+  updateNode(node: TreeNode, treeMeta: TreeMeta): void {
     const foundNode = this.findNodeById(node);
     if (foundNode) {
-      foundNode.value = newValue;
-      foundNode.color = newColor;
+      foundNode.value = treeMeta.value;
+      foundNode.backgroundColor = treeMeta.backgroundColor;
+      foundNode.textColor = treeMeta.textColor
     }
   }
 

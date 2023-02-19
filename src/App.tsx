@@ -12,6 +12,10 @@ import * as yup from "yup";
 import { Email } from "@mui/icons-material";
 import { Stack } from "@mui/system";
 
+// custom lines
+// import / export / save data
+// export graph as png
+
 function createTreeObj() {
   const tree = new Tree("root");
   // const node1 = tree.addNode(tree.root, "child1");
@@ -55,7 +59,8 @@ const schema = yup.object().shape({
 
 type FormInputs = {
   value: string;
-  color: string;
+  backgroundColor: string;
+  textColor: string;
 };
 
 function App() {
@@ -88,12 +93,13 @@ function App() {
     console.log(data);
     if (selectedNode && tree) {
       const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.updateNode(selectedNode, data.value, data.color);
+      updatedTree.updateNode(selectedNode, {value: data.value, backgroundColor: data.backgroundColor, textColor: data.textColor});
       setTree(updatedTree);
       setSelectedNode({
         ...selectedNode,
         value: data.value,
-        color: data.color,
+        backgroundColor: data.backgroundColor,
+        textColor: data.textColor,
       });
     }
   };
@@ -108,7 +114,8 @@ function App() {
       setSelectedNode(node);
       handleDrawerOpen();
       setValue("value", node.value);
-      setValue("color", node.color);
+      setValue("backgroundColor", node.backgroundColor);
+      setValue("textColor", node.textColor);
     },
     [tree]
   );
@@ -188,7 +195,7 @@ function App() {
                 )}
               />
               <Controller
-                name="color"
+                name="backgroundColor"
                 control={control}
                 defaultValue="#ffffff"
                 rules={{ validate: matchIsValidColor }}
@@ -204,6 +211,23 @@ function App() {
                   />
                 )}
               />
+              <Controller
+                name="textColor"
+                control={control}
+                defaultValue="#ffffff"
+                rules={{ validate: matchIsValidColor }}
+                render={({ field, fieldState }) => (
+                  <MuiColorInput
+                    {...field}
+                    label="Text color"
+                    className="my-3"
+                    isAlphaHidden
+                    format="hex"
+                    helperText={fieldState.invalid ? "Color is invalid" : ""}
+                    error={fieldState.invalid}
+                  />
+                )}
+              />              
               <Button variant="contained" color="success" onClick={() => {
                 if (selectedNode) {
                   handleInvertNode(selectedNode);
