@@ -2,18 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { Tree, TreeNode } from "./tree";
 import TreeGraph from "./TreeGraph";
-import {
-  Divider,
-  Drawer,
-  Fab,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { Divider, Drawer, Fab, IconButton, Toolbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
-import ListIcon from '@mui/icons-material/List';
+import ListIcon from "@mui/icons-material/List";
 import EditNodeForm, { FormInputs } from "./EditNodeForm";
 // custom lines
+// shift left or right
 // import / export / save data
 // export graph as png
 
@@ -54,6 +49,10 @@ function createTreeObj() {
   return tree;
 }
 
+function cloneTree(tree: Tree): Tree {
+  return Object.assign(Object.create(tree), tree);
+}
+
 function App() {
   const drawerWidth = 400;
 
@@ -61,7 +60,10 @@ function App() {
   const [selectedNode, setSelectedNode] = useState<TreeNode>();
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
-  console.log(drawerOpen);
+  useEffect(() => {
+    const treeObj = createTreeObj();
+    setTree(treeObj);
+  }, []);
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
@@ -71,30 +73,6 @@ function App() {
     setDrawerOpen(false);
   };
 
-  const onSubmit = (data: FormInputs) => {
-    console.log(data);
-    if (selectedNode && tree) {
-      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.updateNode(selectedNode, {
-        value: data.value,
-        backgroundColor: data.backgroundColor,
-        textColor: data.textColor,
-      });
-      setTree(updatedTree);
-      setSelectedNode({
-        ...selectedNode,
-        value: data.value,
-        backgroundColor: data.backgroundColor,
-        textColor: data.textColor,
-      });
-    }
-  };
-
-  useEffect(() => {
-    const treeObj = createTreeObj();
-    setTree(treeObj);
-  }, []);
-
   const handleNodeClick = useCallback(
     (node: TreeNode) => {
       setSelectedNode(node);
@@ -102,11 +80,23 @@ function App() {
     },
     [tree]
   );
+  
+  const handleUpdateSelectedNode = (data: FormInputs) => {
+    if (selectedNode && tree) {
+      const updatedTree: Tree = cloneTree(tree); // clone tree
+      updatedTree.updateNode(selectedNode, {
+        value: data.value,
+        backgroundColor: data.backgroundColor,
+        textColor: data.textColor,
+      });
+      setTree(updatedTree);
+    }
+  };
 
   const handleAddNode = useCallback(
     (node: TreeNode) => {
       if (tree) {
-        const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+        const updatedTree: Tree = cloneTree(tree);
         updatedTree.addNode(node, "new");
         setTree(updatedTree);
       }
@@ -117,7 +107,7 @@ function App() {
   const handleInvertNode = useCallback(
     (node: TreeNode) => {
       if (tree) {
-        const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+        const updatedTree: Tree = cloneTree(tree);
         updatedTree.invertSubtree(node);
         setTree(updatedTree);
       }
@@ -127,7 +117,7 @@ function App() {
 
   const handleDeleteNode = (node: TreeNode) => {
     if (tree) {
-      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+      const updatedTree: Tree = cloneTree(tree); 
       updatedTree.removeNode(node);
       setTree(updatedTree);
       setSelectedNode(undefined);
@@ -166,7 +156,12 @@ function App() {
           </Toolbar>
           <Divider className="mt-12" />
           <div className="mx-5 my-12">
-            <EditNodeForm selectedNode={selectedNode} onSubmit={onSubmit} onDelete={handleDeleteNode} onInvert={handleInvertNode} />
+            {selectedNode && <EditNodeForm
+              selectedNode={selectedNode}
+              onSubmit={handleUpdateSelectedNode}
+              onDelete={handleDeleteNode}
+              onInvert={handleInvertNode}
+            />}
           </div>
         </Drawer>
         {tree && (

@@ -22,7 +22,7 @@ function EditNodeForm({
   onDelete,
   onInvert,
 }: {
-  selectedNode: TreeNode | undefined;
+  selectedNode: TreeNode;
   onSubmit: (data: FormInputs) => void;
   onDelete: (node: TreeNode) => void;
   onInvert: (node: TreeNode) => void;
