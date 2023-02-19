@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { Tree, TreeNode } from "./tree";
 import TreeGraph from "./TreeGraph";
 import Button from "@mui/material/Button";
-import {
-  Drawer,
-  TextField,
-} from "@mui/material";
+import { Divider, Drawer, IconButton, TextField, Toolbar } from "@mui/material";
+import { MuiColorInput, matchIsValidColor } from "mui-color-input";
+import CloseIcon from '@mui/icons-material/Close';
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { Email } from "@mui/icons-material";
+import { Stack } from "@mui/system";
 
 function createTreeObj() {
   const tree = new Tree("root");
@@ -45,29 +49,62 @@ function createTreeObj() {
   return tree;
 }
 
+const schema = yup.object().shape({
+  value: yup.string().required("value is required"),
+});
+
+type FormInputs = {
+  value: string;
+  color: string;
+};
+
 function App() {
   const drawerWidth = 400;
 
   const [tree, setTree] = useState<Tree>();
   const [selectedNode, setSelectedNode] = useState<TreeNode>();
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+  console.log(drawerOpen);
+  
+  const handleDrawerOpen = () => {
+    setDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormInputs>({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = (data: FormInputs) => {
+    console.log(data)
+    if (selectedNode && tree) {
+      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
+      updatedTree.updateNode(selectedNode, data.value, data.color);
+      setTree(updatedTree);
+      setSelectedNode({ ...selectedNode, value: data.value, color: data.color });
+    }
+  };
 
   useEffect(() => {
     const treeObj = createTreeObj();
     setTree(treeObj);
   }, []);
 
-  const handleNodeClick = (node: TreeNode) => {
+  const handleNodeClick = useCallback((node: TreeNode) => {
     setSelectedNode(node);
-  };
-
-  const handleNodeChange = (newValue: string) => {
-    if (selectedNode && tree) {
-      const updatedTree: Tree = Object.assign(Object.create(tree), tree); // clone tree
-      updatedTree.updateNode(selectedNode, newValue);
-      setTree(updatedTree);
-      setSelectedNode({ ...selectedNode, value: newValue });
-    }
-  };
+    handleDrawerOpen();
+    setValue("value", node.value);
+    setValue("color", node.color);
+  }, [tree]);
 
   return (
     <div className="m-40">
@@ -80,29 +117,71 @@ function App() {
             boxSizing: "border-box",
           },
         }}
-        variant="permanent"
+        variant="persistent"
         anchor="right"
+        open={drawerOpen}
       >
+        <Toolbar>
+          <div className="w-full flex justify-between items-center">
+            <h1>Modify Node</h1>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerClose}
+              edge="start"
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>       
+          </Toolbar>
+        <Divider className="mt-12" />
         <div className="mx-5 my-12">
-          <TextField
-            key="idk"
-            id="outlined-multiline-flexible"
-            label="Node Name"
-            value={selectedNode?.value}
-            onChange={(event) => {
-              if (selectedNode) {
-                handleNodeChange(event.target.value);
-              }
-            }}
-            className="w-full"
-            multiline
-            maxRows={4}
-          />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={3}>
+            <Controller
+              name="value"
+              control={control}
+              defaultValue=''
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Name"
+                  className="my-3"
+                  error={!!errors.value}
+                  helperText={errors.value?.message}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
+            />
+            <Controller
+              name="color"
+              control={control}
+              defaultValue='#ffffff'
+              rules={{ validate: matchIsValidColor }}
+              render={({ field, fieldState }) => (
+                <MuiColorInput
+                  {...field}
+                  label="Background color"
+                  className="my-3"
+                  isAlphaHidden
+                  format="hex"
+                  helperText={fieldState.invalid ? "Color is invalid" : ""}
+                  error={fieldState.invalid}
+                />
+              )}
+            />            
+
+            <Button type="submit" variant="contained" color="primary">
+              Submit
+            </Button>
+            </Stack>            
+          </form>
+
         </div>
       </Drawer>
 
-      <Button variant="contained">Hello World</Button>
-      {tree && <TreeGraph onNodeClick={handleNodeClick} tree={tree} />}
+      {tree && <TreeGraph onNodeClick={(handleNodeClick)} tree={tree} />}
     </div>
   );
 }

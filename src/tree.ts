@@ -1,12 +1,14 @@
 
 export class TreeNode {
   id: number;
-  value: any;
+  value: string;
+  color: string;
   children: TreeNode[];
 
-  constructor(id: number, value: any, children = []) {
+  constructor(id: number, value: string, children = []) {
     this.id = id;
     this.value = value;
+    this.color = '#4B5563';
     this.children = children;
   }
 
@@ -36,12 +38,13 @@ export class Tree {
     return this.nodes.get(node.id);
   }
 
-  updateNode(node: TreeNode, newValue: any): void {
+  updateNode(node: TreeNode, newValue: any, newColor: any): void {
 
     const foundNode = this.findNodeById(node);
 
     if (foundNode) {
       foundNode.value = newValue; 
+      foundNode.color = newColor; 
     }
 
   }

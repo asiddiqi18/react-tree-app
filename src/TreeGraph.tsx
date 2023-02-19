@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Tree, TreeNode } from "./tree";
 import Line from "./Line";
 import { useWindowResize } from "./useWindowSize";
@@ -12,10 +12,11 @@ function TreeGraph({ tree, onNodeClick }: { tree: Tree, onNodeClick: (node: Tree
   function Node({ node }: { node: TreeNode }) {
     return (
       <div
-        className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full bg-gray-600 cursor-pointer"
+        className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer"
         style={{
           width: NODE_WIDTH,
           height: NODE_HEIGHT,
+          backgroundColor: node.color,
         }}
         onClick={() => onNodeClick(node)}
       >
@@ -94,4 +95,4 @@ function TreeGraph({ tree, onNodeClick }: { tree: Tree, onNodeClick: (node: Tree
   }
 }
 
-export default TreeGraph;
+export default memo(TreeGraph);
