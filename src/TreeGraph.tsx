@@ -25,7 +25,7 @@ function TreeGraph({
     const handlePlusClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
       onAddNode(node);
-    }
+    };
 
     return (
       <div
@@ -43,32 +43,28 @@ function TreeGraph({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div
-          className="flex flex-col justify-between items-center h-full"
-        >
+        <div className="flex flex-col justify-between items-center h-full">
           <div className="flex-1"></div>
           <p className="pt-1 flex-1 break-words">{node.value}</p>
-            <div className="flex-1">
-          {hover &&
+          <div className="flex-1">
+            {hover && (
               <IconButton
                 onClick={(e) => handlePlusClick(e)}
                 color="success"
                 sx={{
                   "&:hover": {
-                    backgroundColor: '#81c784'
+                    backgroundColor: "#81c784",
                   },
                   height: 16,
                   width: 16,
                   bottom: 0,
                   padding: 1.4,
-              
                 }}
               >
                 <AddIcon />
               </IconButton>
-          }
-            </div>
-          
+            )}
+          </div>
         </div>
       </div>
     );
@@ -111,7 +107,6 @@ function TreeGraph({
 
     useEffect(() => {
       if (!parentRef) {
-        // console.log(`No parent (${nodeRef.current?.id}) skipping...`);
         return;
       }
       if (nodeRef.current) {

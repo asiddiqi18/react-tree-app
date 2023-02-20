@@ -12,23 +12,12 @@ import EditNodeForm, { FormInputs } from "./EditNodeForm";
 // import / export / save data
 // export graph as png
 
+interface MyData {
+  tree: Tree;
+}
+
 function createTreeObj() {
   const tree = new Tree("root");
-  // const node1 = tree.addNode(tree.root, "child1");
-  // const node2 = tree.addNode(tree.root, "child2");
-  // const node3 = tree.addNode(node1, "grandchild1.1");
-  // const node4 = tree.addNode(node1, "grandchild1.2");
-  // const node5 = tree.addNode(node1, "grandchild1.3");
-  // const node6 = tree.addNode(node5, "great-grandchild1.3.1");
-  // const node7 = tree.addNode(node2, "grandchild2.1");
-  // const node8 = tree.addNode(node2, "grandchild2.2");
-  // const node9 = tree.addNode(node7, "great-grandchild2.2.1");
-  // const node10 = tree.addNode(node7, "great-grandchild2.2.2");
-  // const node11 = tree.addNode(node7, "great-grandchild2.2.3");
-  // const node12 = tree.addNode(node7, "great-grandchild2.2.4");
-  // const node13 = tree.addNode(node11, "great-great-grandchild2.2.4.1");
-  // const node14 = tree.addNode(node11, "great-great-grandchild2.2.4.2");
-  // const node15 = tree.addNode(node2, "grandchild2.3");
 
   const node1 = tree.addNode(tree.root, "A");
   const node2 = tree.addNode(tree.root, "B");
@@ -60,9 +49,39 @@ function App() {
   const [selectedNode, setSelectedNode] = useState<TreeNode>();
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
+  const saveDataToLocal = (data: MyData) => {
+    if (tree) {
+      console.log("saving")
+      console.log(data.tree)
+      localStorage.setItem('myData', tree.serialize());
+    }
+  }  
+
+  const getDataFromLocal = (): MyData | null => {
+    const data = localStorage.getItem('myData');
+    if (data) {
+      console.log('fetching from local', Tree.deserialize(data))
+      return {tree: Tree.deserialize(data)};
+    }
+    console.log('creating new tree')
+    return null;
+  }  
+
   useEffect(() => {
-    const treeObj = createTreeObj();
-    setTree(treeObj);
+    // setTree(createTreeObj());
+    console.log("trying to get from local...")
+    const treeObj = getDataFromLocal();
+    console.log(treeObj)
+    if (treeObj) {
+      console.log("A")
+      const tree1: Tree = treeObj.tree;
+      const importedTree = cloneTree(tree1);
+      setTree(importedTree);
+      console.log(importedTree)
+    } else {
+      console.log("B")
+      setTree(createTreeObj());
+    }
   }, []);
 
   const handleDrawerOpen = () => {
@@ -80,6 +99,15 @@ function App() {
     },
     [tree]
   );
+
+  const saveTree = () => {
+    if (tree) {
+      const myData: MyData = { tree };
+      saveDataToLocal(myData);
+    } else {
+      console.log("tree is undefined")
+    }
+  }
   
   const handleUpdateSelectedNode = (data: FormInputs) => {
     if (selectedNode && tree) {
@@ -90,6 +118,7 @@ function App() {
         textColor: data.textColor,
       });
       setTree(updatedTree);
+      saveTree();      
     }
   };
 
@@ -99,6 +128,7 @@ function App() {
         const updatedTree: Tree = cloneTree(tree);
         updatedTree.addNode(node, "new");
         setTree(updatedTree);
+        saveTree();
       }
     },
     [tree]
@@ -110,6 +140,7 @@ function App() {
         const updatedTree: Tree = cloneTree(tree);
         updatedTree.invertSubtree(node);
         setTree(updatedTree);
+      saveTree();        
       }
     },
     [tree]
@@ -120,10 +151,24 @@ function App() {
       const updatedTree: Tree = cloneTree(tree); 
       updatedTree.removeNode(node);
       setTree(updatedTree);
+      saveTree();      
       setSelectedNode(undefined);
       handleDrawerClose();
     }
   };
+
+  const handleShift = (node: TreeNode, direction: 'left' | 'right') => {
+    if (tree) {
+      const updatedTree: Tree = cloneTree(tree); 
+      if (direction === 'left') {
+        updatedTree.shiftLeft(node);
+      } else if (direction === 'right') {
+        updatedTree.shiftRight(node);
+      }
+      setTree(updatedTree);
+      saveTree();      
+    }
+  }
 
   return (
     <>
@@ -143,7 +188,7 @@ function App() {
         >
           <Toolbar>
             <div className="w-full flex justify-between items-center">
-              <h1>Modify Node</h1>
+              <h1>Modify Node '{selectedNode?.value}'</h1>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -156,12 +201,15 @@ function App() {
           </Toolbar>
           <Divider className="mt-12" />
           <div className="mx-5 my-12">
-            {selectedNode && <EditNodeForm
-              selectedNode={selectedNode}
-              onSubmit={handleUpdateSelectedNode}
-              onDelete={handleDeleteNode}
-              onInvert={handleInvertNode}
-            />}
+            {selectedNode && (
+              <EditNodeForm
+                selectedNode={selectedNode}
+                onSubmit={handleUpdateSelectedNode}
+                onDelete={handleDeleteNode}
+                onInvert={handleInvertNode}
+                onShift={handleShift}
+              />
+            )}
           </div>
         </Drawer>
         {tree && (
@@ -176,11 +224,21 @@ function App() {
         <div className="flex gap-5">
           <Fab
             color="error"
-            onClick={() => tree && handleDeleteNode(tree.root)}
+            onClick={() => {
+              if (tree) {
+                handleDeleteNode(tree.root);
+                saveTree();
+              }
+            }}
           >
             <ClearIcon />
           </Fab>
-          <Fab color="info">
+          <Fab
+            color="info"
+            onClick={() => {
+              setTree(createTreeObj())
+            }}
+          >
             <ListIcon />
           </Fab>
         </div>

@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { TreeNode } from "./tree";
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 
 export type FormInputs = {
   value: string;
@@ -21,11 +23,13 @@ function EditNodeForm({
   onSubmit,
   onDelete,
   onInvert,
+  onShift,
 }: {
   selectedNode: TreeNode;
   onSubmit: (data: FormInputs) => void;
   onDelete: (node: TreeNode) => void;
   onInvert: (node: TreeNode) => void;
+  onShift: (node: TreeNode, direction: 'left' | 'right') => void;
 }) {
   const {
     control,
@@ -97,6 +101,10 @@ function EditNodeForm({
             />
           )}
         />
+        <div className="flex gap-1 justify-between">
+            <Button startIcon={<KeyboardDoubleArrowLeftIcon />} variant="contained" className="w-1/2" color='info' onClick={() => onShift(selectedNode, 'left')}>Shift left</Button>
+            <Button endIcon={<KeyboardDoubleArrowRightIcon/>} variant="contained" className="w-1/2" color='info' onClick={() => onShift(selectedNode, 'right')}>Shift right</Button>
+        </div>
         <Button
           variant="contained"
           color="success"

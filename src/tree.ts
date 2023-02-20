@@ -58,6 +58,27 @@ export class Tree {
     }
   }
 
+  shiftLeft(node: TreeNode): void {
+    const parent = this.findParentNode(node);
+    if (parent) {
+      const firstElement = parent.children.shift();
+      if (firstElement) parent.children.push(firstElement);
+    }
+  }
+
+  countSiblings(node: TreeNode): number {
+    const parent = this.findParentNode(node);
+    return parent?.children.length ?? 0;
+  }
+
+  shiftRight(node: TreeNode) {
+    const parent = this.findParentNode(node);
+    if (parent) {
+      const lastElement = parent.children.pop();
+      if (lastElement) parent.children.unshift(lastElement);
+    }
+  }
+
   findNodeById(node: TreeNode): TreeNode | undefined {
     return this.nodes.get(node.id);
   }
@@ -67,15 +88,72 @@ export class Tree {
     if (foundNode) {
       foundNode.value = treeMeta.value;
       foundNode.backgroundColor = treeMeta.backgroundColor;
-      foundNode.textColor = treeMeta.textColor
+      foundNode.textColor = treeMeta.textColor;
     }
   }
 
   invertSubtree(node: TreeNode): void {
     if (node.children.length > 0) {
       node.children.reverse();
-      node.children.forEach(child => this.invertSubtree(child));
+      node.children.forEach((child) => this.invertSubtree(child));
     }
   }
 
-}
+  serialize(): string {
+    console.log(" -- serialize")
+    const serializedNodes: any[] = [];
+    this.nodes.forEach((node) => {
+      if (node) {
+        const { id, value, backgroundColor, textColor, children } = node;
+        serializedNodes.push({ id, value, backgroundColor, textColor, childrenIds: children.map((child) => child.id) });
+      }
+    });
+    return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
+  }
+
+    // Deserialize a JSON string to a Tree instance
+    static deserialize(jsonString: string): Tree {
+      console.log(" -- deserialize", jsonString)
+      const data = JSON.parse(jsonString);
+      console.log(data)
+      const nodesMap = new Map<number, TreeNode>();
+
+      data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
+        const { id, value, backgroundColor, textColor } = serializedNode;
+        const node = new TreeNode(id, value);
+        node.backgroundColor = backgroundColor;
+        node.textColor = textColor;
+        
+        nodesMap.set(id, node);
+      });
+
+      data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
+        const { id, value, childrenIds } = serializedNode;
+        const children = childrenIds.map((id: number) => nodesMap.get(id)!);
+
+        console.log(id, value, childrenIds, '\n')
+
+
+        const node = nodesMap.get(id);
+        if (node) {
+          node.children = children;
+          nodesMap.set(id, node);
+        }      
+      
+      });
+
+      const root = nodesMap.get(0);
+
+      if (root) {
+        const tree = new Tree(root.value);
+        tree.root = root;
+        tree.nodes = nodesMap;
+        tree.nextId = data.nodes.length - 1;
+        return tree;
+      }
+
+      return new Tree('hi');
+
+    }
+  }
+
