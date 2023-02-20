@@ -3,9 +3,10 @@ import { CSSProperties, useEffect } from "react";
 type Props = {
   fromRect: DOMRect | null;
   toRect: DOMRect | null;
+  showArrow?: boolean;
 };
 
-const LineTo: React.FC<Props> = ({ fromRect, toRect }) => {
+const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow=false }) => {
   if (!fromRect || !toRect) {
     return null;
   }
@@ -38,18 +39,40 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect }) => {
     height: height,
     pointerEvents: "none",
   };
+  const pathLength = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
   const pathStyle: CSSProperties = {
     fill: "none",
     stroke: "black",
     strokeWidth: "2px",
     strokeLinecap: "round",
     strokeLinejoin: "round",
+    strokeDasharray: showArrow ? `${pathLength - (48+20)}` : undefined,
+
   };
 
   return (
     <div className="line" style={style}>
       <svg style={svgStyle}>
-        <path d={`M ${x1} ${y1} L ${x2} ${y2}`} style={pathStyle} />
+        <path
+          d={`M ${x1} ${y1} L ${x2} ${y2}`}
+          style={pathStyle}
+          markerEnd="url(#arrowhead)"
+        />
+        {showArrow &&
+          <defs>
+            <marker
+              className='fill-gray-600'
+              id="arrowhead"
+              markerWidth="10"
+              markerHeight="8"
+              refX="34px"
+              refY="3.5"
+              orient="auto"
+            >
+              <polygon points="0 0, 10 3.5, 0 7" />
+            </marker>
+          </defs>
+        }
       </svg>
     </div>
   );

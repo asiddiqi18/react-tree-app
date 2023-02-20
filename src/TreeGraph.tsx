@@ -30,7 +30,7 @@ function TreeGraph({
     const bubble = () => {
       return (
         <div
-          className="hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer "
+          className="hover:brightness-95 hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer "
           style={{
             width: NODE_WIDTH,
             height: NODE_HEIGHT,
@@ -137,7 +137,7 @@ function TreeGraph({
         <div ref={nodeRef} id={`${node.value}-node`}>
           <Node node={node} />
         </div>
-        <Line key={node.id}  fromRect={fromRect} toRect={toRect} />
+        <Line key={node.id}  fromRect={fromRect} toRect={toRect} showArrow/>
         {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
       </div>
     );
