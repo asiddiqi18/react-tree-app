@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { Tree, TreeNode } from "./tree";
 import Line from "./Line";
 import { useWindowResize } from "./useWindowSize";
-import { IconButton } from "@mui/material";
+import { Fade, Grow, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { BorderColor } from "@mui/icons-material";
 let NODE_WIDTH = "96px";
@@ -27,47 +27,60 @@ function TreeGraph({
       onAddNode(node);
     };
 
-    return (
-      <div
-        className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer "
-        style={{
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-          backgroundColor: node.backgroundColor,
-          color: node.textColor,
-          // borderStyle: 'inset',
-          // borderWidth: 4,
-          // borderColor: 'red',
-        }}
-        onClick={() => onNodeClick(node)}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <div className="flex flex-col justify-between items-center h-full">
-          <div className="flex-1"></div>
-          <p className="pt-1 flex-1 break-words">{node.value}</p>
-          <div className="flex-1">
-            {hover && (
-              <IconButton
-                onClick={(e) => handlePlusClick(e)}
-                color="success"
-                sx={{
-                  "&:hover": {
-                    backgroundColor: "#81c784",
-                  },
-                  height: 16,
-                  width: 16,
-                  bottom: 0,
-                  padding: 1.4,
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            )}
+    const bubble = () => {
+      return (
+        <div
+          className="my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer "
+          style={{
+            width: NODE_WIDTH,
+            height: NODE_HEIGHT,
+            backgroundColor: node.backgroundColor,
+            color: node.textColor,
+            // borderStyle: 'inset',
+            // borderWidth: 4,
+            // borderColor: 'red',
+          }}
+          onClick={() => onNodeClick(node)}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          <div className="flex flex-col justify-between items-center h-full">
+            <div className="flex-1"></div>
+            <p className="pt-1 flex-1 break-words">{node.id} - {node.value}</p>
+            <div className="flex-1">
+              {hover && (
+                <IconButton
+                  onClick={(e) => handlePlusClick(e)}
+                  color="success"
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#81c784",
+                    },
+                    height: 16,
+                    width: 16,
+                    bottom: 0,
+                    padding: 1.4,
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    if (tree.isMostRecentNode(node)) {
+      return (
+        
+        <Grow in>
+          { bubble()}
+        </Grow>
+      );
+    } else {
+      return bubble();
+    }
   }
 
   function NodeForest({

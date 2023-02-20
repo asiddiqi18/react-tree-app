@@ -31,6 +31,10 @@ export class Tree {
     this.nextId = 0;
   }
 
+  isMostRecentNode(node: TreeNode): boolean {
+    return node.id === this.nextId;
+  }
+
   addNode(parent: TreeNode, value: any): TreeNode {
     const node = new TreeNode(++this.nextId, value);
     parent.children.push(node);
@@ -48,13 +52,37 @@ export class Tree {
     return parentNode;
   }
 
+  BFS(node: TreeNode): TreeNode[][] {
+    const result: TreeNode[][] = [];
+    const queue: TreeNode[] = [node];
+    while (queue.length > 0) {
+      const levelNodes: TreeNode[] = [];
+      const levelSize = queue.length;
+      for (let i = 0; i < levelSize; i++) {
+        const node = queue.shift()!;
+        levelNodes.push(node);
+        queue.push(...node.children);
+      }
+      result.push(levelNodes);
+    }
+    return result;
+  }
+
+
   removeNode(node: TreeNode): void {
     const parent = this.findParentNode(node);
     if (parent) {
       parent.children = parent.children.filter((child) => child.id !== node.id);
-      this.nodes.delete(node.id);
+      const levels = this.BFS(node);
+      levels.forEach((level) => {
+        level.forEach((child) => {
+          this.nodes.delete(child.id);
+        })
+      });
     } else {
       node.children = [];
+      this.nodes.clear();
+      this.nodes.set(node.id, node);
     }
   }
 
@@ -100,7 +128,6 @@ export class Tree {
   }
 
   serialize(): string {
-    console.log(" -- serialize")
     const serializedNodes: any[] = [];
     this.nodes.forEach((node) => {
       if (node) {
@@ -113,9 +140,7 @@ export class Tree {
 
     // Deserialize a JSON string to a Tree instance
     static deserialize(jsonString: string): Tree {
-      console.log(" -- deserialize", jsonString)
       const data = JSON.parse(jsonString);
-      console.log(data)
       const nodesMap = new Map<number, TreeNode>();
 
       data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
@@ -130,9 +155,6 @@ export class Tree {
       data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
         const { id, value, childrenIds } = serializedNode;
         const children = childrenIds.map((id: number) => nodesMap.get(id)!);
-
-        console.log(id, value, childrenIds, '\n')
-
 
         const node = nodesMap.get(id);
         if (node) {

@@ -51,8 +51,6 @@ function App() {
 
   const saveDataToLocal = (data: MyData) => {
     if (tree) {
-      console.log("saving")
-      console.log(data.tree)
       localStorage.setItem('myData', tree.serialize());
     }
   }  
@@ -60,26 +58,19 @@ function App() {
   const getDataFromLocal = (): MyData | null => {
     const data = localStorage.getItem('myData');
     if (data) {
-      console.log('fetching from local', Tree.deserialize(data))
       return {tree: Tree.deserialize(data)};
     }
-    console.log('creating new tree')
     return null;
   }  
 
   useEffect(() => {
     // setTree(createTreeObj());
-    console.log("trying to get from local...")
     const treeObj = getDataFromLocal();
-    console.log(treeObj)
     if (treeObj) {
-      console.log("A")
       const tree1: Tree = treeObj.tree;
       const importedTree = cloneTree(tree1);
       setTree(importedTree);
-      console.log(importedTree)
     } else {
-      console.log("B")
       setTree(createTreeObj());
     }
   }, []);
@@ -236,7 +227,9 @@ function App() {
           <Fab
             color="info"
             onClick={() => {
-              setTree(createTreeObj())
+              // setTree(createTreeObj())
+              // saveTree();
+              console.log(tree?.nodes);
             }}
           >
             <ListIcon />
