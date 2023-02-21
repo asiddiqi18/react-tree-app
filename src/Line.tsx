@@ -4,9 +4,11 @@ type Props = {
   fromRect: DOMRect | null;
   toRect: DOMRect | null;
   showArrow?: boolean;
+  dashed?: boolean;
+  lineColor?: string;
 };
 
-const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow = false }) => {
+const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow = false, dashed = false, lineColor = 'black' }) => {
   if (!fromRect || !toRect) {
     return null;
   }
@@ -42,9 +44,9 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow = false }) => {
   const primaryLineStyle: CSSProperties = {
     position: 'relative',
     fill: "none",
-    stroke: "black",
+    stroke: lineColor,
     strokeWidth: "2px",
-
+    strokeDasharray: dashed ? '4' : undefined,
     zIndex: -10,
   };
 

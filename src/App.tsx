@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
-import { Tree, TreeNode } from "./tree";
+import { defaultBackgroundColor, defaultBackgroundText, Tree, TreeNode } from "./tree";
 import TreeGraph from "./TreeGraph";
 import { Divider, Drawer, Fab, IconButton, Toolbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -8,8 +8,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ListIcon from "@mui/icons-material/List";
 import EditNodeForm, { FormInputs } from "./EditNodeForm";
 // custom lines
-// shift left or right
-// import / export / save data
 // export graph as png
 
 interface MyData {
@@ -17,7 +15,11 @@ interface MyData {
 }
 
 function createTreeObj() {
-  const tree = new Tree("root");
+  const tree = new Tree({
+    value: "root",
+    backgroundColor: defaultBackgroundColor,
+    textColor: defaultBackgroundText,
+  });
 
   const node1 = tree.addNode(tree.root, "A");
   const node2 = tree.addNode(tree.root, "B");
@@ -56,6 +58,8 @@ function App() {
   }  
 
   const getDataFromLocal = (): MyData | null => {
+    // localStorage.setItem('myData', '');
+
     const data = localStorage.getItem('myData');
     if (data) {
       return {tree: Tree.deserialize(data)};
@@ -179,7 +183,7 @@ function App() {
         >
           <Toolbar>
             <div className="w-full flex justify-between items-center">
-              <h1>Modify Node '{selectedNode?.value}'</h1>
+              <h1>Modify Node '{selectedNode?.attributes.value}'</h1>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"

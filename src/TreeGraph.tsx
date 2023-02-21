@@ -34,8 +34,8 @@ function TreeGraph({
           style={{
             width: NODE_WIDTH,
             height: NODE_HEIGHT,
-            backgroundColor: node.backgroundColor,
-            color: node.textColor,
+            backgroundColor: node.attributes.backgroundColor,
+            color: node.attributes.textColor,
             // borderStyle: 'inset',
             // borderWidth: 4,
             // borderColor: 'red',
@@ -46,7 +46,7 @@ function TreeGraph({
         >
           <div className="flex flex-col justify-between items-center h-full">
             <div className="flex-1"></div>
-            <p className="pt-1 flex-1 break-words">{node.id} - {node.value}</p>
+            <p className="pt-1 flex-1 break-words">{node.id} - {node.attributes.value}</p>
             <div className="flex-1">
               {hover && (
                 <IconButton
@@ -86,7 +86,7 @@ function TreeGraph({
         {node.children && node.children.length > 0 && (
           <div className="flex gap-x-4">
             {node.children.map((child, index) => (
-              <div id={`${node.value}-children-${index}`} key={child.id}>
+              <div id={`${node.attributes.value}-children-${index}`} key={child.id}>
                 <NodeTree node={child} parentRef={parentRef} />
               </div>
             ))}
@@ -124,8 +124,8 @@ function TreeGraph({
     const hasChildren = node.children?.length > 0;
 
     return (
-      <div id={node.value} className="flex flex-col items-center">
-        <div ref={nodeRef} id={`${node.value}-node`}>
+      <div id={node.attributes.value} className="flex flex-col items-center">
+        <div ref={nodeRef} id={`${node.attributes.value}-node`}>
           <Node node={node} />
         </div>
         <Line key={node.id}  fromRect={fromRect} toRect={toRect}/>
@@ -139,7 +139,7 @@ function TreeGraph({
   );
 
   function renderNode(node: TreeNode) {
-    return <NodeTree key={node.value} node={node} parentRef={null} />;
+    return <NodeTree key={node.attributes.value} node={node} parentRef={null} />;
   }
 }
 

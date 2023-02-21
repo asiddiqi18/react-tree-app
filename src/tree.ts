@@ -1,20 +1,25 @@
+
+export const defaultBackgroundColor = '#a5d6a7';
+export const defaultBackgroundText = '#000000';
+
+
 export class TreeNode {
   id: number;
-  value: string;
-  backgroundColor: string;
-  textColor: string;
+  attributes: TreeNodeAttributes;
   children: TreeNode[];
 
-  constructor(id: number, value: string, children = []) {
+  constructor(
+    id: number,
+    attributes: TreeNodeAttributes,
+    children = []
+  ) {
     this.id = id;
-    this.value = value;
-    this.backgroundColor = "#a5d6a7";
-    this.textColor = "#000000";
     this.children = children;
+    this.attributes = attributes;
   }
 }
 
-export type TreeMeta = {
+export type TreeNodeAttributes = {
   value: string,
   backgroundColor: string,
   textColor: string,
@@ -25,8 +30,8 @@ export class Tree {
   nodes: Map<number, TreeNode>;
   nextId: number;
 
-  constructor(value: any) {
-    this.root = new TreeNode(0, value);
+  constructor(attributes: TreeNodeAttributes) {
+    this.root = new TreeNode(0, attributes);
     this.nodes = new Map<number, TreeNode>([[0, this.root]]);
     this.nextId = 0;
   }
@@ -35,8 +40,12 @@ export class Tree {
     return node.id === this.nextId;
   }
 
-  addNode(parent: TreeNode, value: any): TreeNode {
-    const node = new TreeNode(++this.nextId, value);
+  addNode(parent: TreeNode, value: string): TreeNode {
+    const node = new TreeNode(++this.nextId, {
+      value: value,
+      backgroundColor: defaultBackgroundColor,
+      textColor: defaultBackgroundText,
+    });
     parent.children.push(node);
     this.nodes.set(this.nextId, node);
     return node;
@@ -111,12 +120,12 @@ export class Tree {
     return this.nodes.get(node.id);
   }
 
-  updateNode(node: TreeNode, treeMeta: TreeMeta): void {
+  updateNode(node: TreeNode, treeMeta: TreeNodeAttributes): void {
     const foundNode = this.findNodeById(node);
     if (foundNode) {
-      foundNode.value = treeMeta.value;
-      foundNode.backgroundColor = treeMeta.backgroundColor;
-      foundNode.textColor = treeMeta.textColor;
+      foundNode.attributes.value = treeMeta.value;
+      foundNode.attributes.backgroundColor = treeMeta.backgroundColor;
+      foundNode.attributes.textColor = treeMeta.textColor;
     }
   }
 
@@ -131,8 +140,8 @@ export class Tree {
     const serializedNodes: any[] = [];
     this.nodes.forEach((node) => {
       if (node) {
-        const { id, value, backgroundColor, textColor, children } = node;
-        serializedNodes.push({ id, value, backgroundColor, textColor, childrenIds: children.map((child) => child.id) });
+        const { id, attributes, children } = node;
+        serializedNodes.push({ id, attributes, childrenIds: children.map((child) => child.id) });
       }
     });
     return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
@@ -140,24 +149,26 @@ export class Tree {
 
     // Deserialize a JSON string to a Tree instance
     static deserialize(jsonString: string): Tree {
+
+      console.log({jsonString})
+
       const data = JSON.parse(jsonString);
       const nodesMap = new Map<number, TreeNode>();
 
-      data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
-        const { id, value, backgroundColor, textColor } = serializedNode;
-        const node = new TreeNode(id, value);
-        node.backgroundColor = backgroundColor;
-        node.textColor = textColor;
+      data.nodes.forEach((serializedNode: { id: any; attributes: any; }) => {
+        const { id, attributes } = serializedNode;
+        const node = new TreeNode(id, attributes);
         
         nodesMap.set(id, node);
       });
 
-      data.nodes.forEach((serializedNode: { id: any; value: any; backgroundColor: any; textColor: any; childrenIds: any; }) => {
-        const { id, value, childrenIds } = serializedNode;
+      data.nodes.forEach((serializedNode: { id: any; attributes: any; childrenIds: any; }) => {
+        const { id, attributes, childrenIds } = serializedNode;
         const children = childrenIds.map((id: number) => nodesMap.get(id)!);
 
         const node = nodesMap.get(id);
         if (node) {
+          node.attributes = attributes;
           node.children = children;
           nodesMap.set(id, node);
         }      
@@ -167,14 +178,14 @@ export class Tree {
       const root = nodesMap.get(0);
 
       if (root) {
-        const tree = new Tree(root.value);
+        const tree = new Tree({value: root.attributes.value, backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText});
         tree.root = root;
         tree.nodes = nodesMap;
         tree.nextId = data.nodes.length - 1;
         return tree;
       }
 
-      return new Tree('hi');
+      return new Tree({value: 'hi', backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText});
 
     }
   }

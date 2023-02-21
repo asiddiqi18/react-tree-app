@@ -42,9 +42,9 @@ function EditNodeForm({
 
   useEffect(() => {
     if (selectedNode) {
-        setValue("value", selectedNode.value);
-        setValue("backgroundColor", selectedNode.backgroundColor);
-        setValue("textColor", selectedNode.textColor);
+        setValue("value", selectedNode.attributes.value);
+        setValue("backgroundColor", selectedNode.attributes.backgroundColor);
+        setValue("textColor", selectedNode.attributes.textColor);
     }
   }, [selectedNode]);
 
