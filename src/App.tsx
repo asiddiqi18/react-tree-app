@@ -1,18 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
-import {
-	defaultBackgroundColor,
-	defaultBackgroundText,
-	defaultLineAttributes,
-	Tree,
-	TreeNode,
-} from './tree';
+import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
 import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
 import ListIcon from '@mui/icons-material/List';
 import EditNodeForm, { FormInputs } from './EditNodeForm';
+import _ from 'lodash';
 // export graph as png
 
 interface MyData {
@@ -20,30 +15,97 @@ interface MyData {
 }
 
 function createTreeObj() {
-	const tree = new Tree({
-		value: 'root',
-		backgroundColor: defaultBackgroundColor,
-		textColor: defaultBackgroundText,
-		lineAttributes: defaultLineAttributes,
-	});
+	const data = {
+		rootId: 0,
+		nodes: [
+			{
+				id: 0,
+				attributes: {
+					value: 'root',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [1, 2],
+			},
+			{
+				id: 1,
+				attributes: {
+					value: 'new',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [],
+			},
+			{
+				id: 2,
+				attributes: {
+					value: 'new',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [3, 4, 5],
+			},
+			{
+				id: 3,
+				attributes: {
+					value: 'new',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [],
+			},
+			{
+				id: 4,
+				attributes: {
+					value: 'new',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [],
+			},
+			{
+				id: 5,
+				attributes: {
+					value: 'new',
+					backgroundColor: '#a5d6a7',
+					textColor: '#000000',
+					lineAttributes: {
+						showArrow: false,
+						dashed: false,
+						lineColor: '#000000',
+					},
+				},
+				childrenIds: [],
+			},
+		],
+	};
 
-	const node1 = tree.addNode(tree.root, 'A');
-	const node2 = tree.addNode(tree.root, 'B');
-	const node3 = tree.addNode(node1, 'C');
-	const node4 = tree.addNode(node1, 'D');
-	const node5 = tree.addNode(node1, 'E');
-	const node6 = tree.addNode(node5, 'F');
-	const node8 = tree.addNode(node2, 'H');
-	const node7 = tree.addNode(node2, 'G');
-	const node9 = tree.addNode(node7, 'I');
-	const node10 = tree.addNode(node7, 'J');
-	const node11 = tree.addNode(node7, 'K');
-	const node12 = tree.addNode(node7, 'L');
-	const node13 = tree.addNode(node11, 'M');
-	const node14 = tree.addNode(node11, 'N');
-	const node15 = tree.addNode(node2, 'O');
-
-	return tree;
+	return Tree.deserialize(JSON.stringify(data));
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -59,13 +121,12 @@ function App() {
 
 	const saveDataToLocal = (data: MyData) => {
 		if (tree) {
-			localStorage.setItem('myData', tree.serialize());
+			localStorage.setItem('myData', data.tree.serialize());
 		}
 	};
 
 	const getDataFromLocal = (): MyData | null => {
 		const data = localStorage.getItem('myData');
-		console.log(data);
 		if (data) {
 			return { tree: Tree.deserialize(data) };
 		}
@@ -73,7 +134,6 @@ function App() {
 	};
 
 	useEffect(() => {
-		// setTree(createTreeObj());
 		const treeObj = getDataFromLocal();
 		if (treeObj) {
 			const tree1: Tree = treeObj.tree;
@@ -100,21 +160,17 @@ function App() {
 		[tree]
 	);
 
-	const saveTree = () => {
-		if (tree) {
-			const myData: MyData = { tree };
-			saveDataToLocal(myData);
-		} else {
-			console.log('tree is undefined');
+	const updateTree = (newTree: Tree) => {
+		if (newTree) {
+			setTree(newTree);
+			const myData: MyData = { tree: newTree };
+			_.debounce(() => {
+				saveDataToLocal(myData);
+			}, 500)();
 		}
 	};
 
-	useEffect(() => {
-		console.log(selectedNode);
-	}, [selectedNode]);
-
 	const handleUpdateSelectedNode = (data: FormInputs) => {
-		console.log(data);
 		if (selectedNode && tree) {
 			const updatedTree: Tree = cloneTree(tree); // clone tree
 			updatedTree.updateNode(selectedNode, {
@@ -127,8 +183,7 @@ function App() {
 					lineColor: data.lineColor,
 				},
 			});
-			setTree(updatedTree);
-			saveTree();
+			updateTree(updatedTree);
 		}
 	};
 
@@ -137,8 +192,7 @@ function App() {
 			if (tree) {
 				const updatedTree: Tree = cloneTree(tree);
 				updatedTree.addNode(node, 'new');
-				setTree(updatedTree);
-				saveTree();
+				updateTree(updatedTree);
 			}
 		},
 		[tree]
@@ -149,8 +203,7 @@ function App() {
 			if (tree) {
 				const updatedTree: Tree = cloneTree(tree);
 				updatedTree.invertSubtree(node);
-				setTree(updatedTree);
-				saveTree();
+				updateTree(updatedTree);
 			}
 		},
 		[tree]
@@ -160,8 +213,7 @@ function App() {
 		if (tree) {
 			const updatedTree: Tree = cloneTree(tree);
 			updatedTree.removeNode(node);
-			setTree(updatedTree);
-			saveTree();
+			updateTree(updatedTree);
 			setSelectedNode(undefined);
 			handleDrawerClose();
 		}
@@ -175,8 +227,7 @@ function App() {
 			} else if (direction === 'right') {
 				updatedTree.shiftRight(node);
 			}
-			setTree(updatedTree);
-			saveTree();
+			updateTree(updatedTree);
 		}
 	};
 
@@ -237,7 +288,6 @@ function App() {
 						onClick={() => {
 							if (tree) {
 								handleDeleteNode(tree.root);
-								saveTree();
 							}
 						}}
 					>
@@ -246,9 +296,8 @@ function App() {
 					<Fab
 						color='info'
 						onClick={() => {
-							// setTree(createTreeObj())
-							// saveTree();
-							console.log(tree?.nodes);
+							const treeObj = createTreeObj();
+							updateTree(treeObj);
 						}}
 					>
 						<ListIcon />
