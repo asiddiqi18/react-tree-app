@@ -53,19 +53,26 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow = false }) => {
     zIndex: -7
   }
 
-  const slope = (y2 - y1) / (x2 - x1);
-  const theta = Math.atan(slope);
-  const x_var = 68 * Math.cos(theta);
-  const y_var = x_var * Math.tan(theta);
-  const x_final = x2 - Math.sign(x2 - x1) * x_var;
-  const y_final = y2 - Math.sign(x2 - x1) * y_var;
+
+  let x_final = x2;
+  let y_final = y2;
+
+  if (showArrow) {
+    const slope = (y2 - y1) / (x2 - x1);
+    const theta = Math.atan(slope);
+    const x_var = 68 * Math.cos(theta);
+    const y_var = x_var * Math.tan(theta);
+    x_final = x2 - Math.sign(x2 - x1) * x_var;
+    y_final = x2 - x1 === 0 ? y2 - y_var : y2 - Math.sign(x2 - x1) * y_var;
+  }
+
 
   return (
     <div className="line" style={style}>
       <svg style={svgStyle}>
         <path
           id='primary-line'
-          d={`M ${x1} ${y1} L ${x_final} ${y_final !== y2 ? y_final : y2 - y_var}`}
+          d={`M ${x1} ${y1} L ${x_final} ${y_final}`}
           style={primaryLineStyle}
           markerEnd="url(#arrowhead)"
         />

@@ -71,16 +71,7 @@ function TreeGraph({
       );
     }
 
-    if (tree.isMostRecentNode(node)) {
-      return (
-        
-        <Grow in>
-          { bubble()}
-        </Grow>
-      );
-    } else {
-      return bubble();
-    }
+    return bubble();
   }
 
   function NodeForest({
@@ -137,7 +128,7 @@ function TreeGraph({
         <div ref={nodeRef} id={`${node.value}-node`}>
           <Node node={node} />
         </div>
-        <Line key={node.id}  fromRect={fromRect} toRect={toRect} showArrow/>
+        <Line key={node.id}  fromRect={fromRect} toRect={toRect}/>
         {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
       </div>
     );
