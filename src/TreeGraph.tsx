@@ -128,7 +128,14 @@ function TreeGraph({
         <div ref={nodeRef} id={`${node.attributes.value}-node`}>
           <Node node={node} />
         </div>
-        <Line key={node.id}  fromRect={fromRect} toRect={toRect}/>
+        <Line
+          key={node.id}
+          fromRect={fromRect}
+          toRect={toRect}
+          lineColor={node.attributes.lineAttributes.lineColor}
+          dashed={node.attributes.lineAttributes.dashed}
+          showArrow={node.attributes.lineAttributes.showArrow}
+        />
         {hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
       </div>
     );

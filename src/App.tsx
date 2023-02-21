@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
-import { defaultBackgroundColor, defaultBackgroundText, Tree, TreeNode } from "./tree";
+import { defaultBackgroundColor, defaultBackgroundText, defaultLineAttributes, Tree, TreeNode } from "./tree";
 import TreeGraph from "./TreeGraph";
 import { Divider, Drawer, Fab, IconButton, Toolbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,6 +19,7 @@ function createTreeObj() {
     value: "root",
     backgroundColor: defaultBackgroundColor,
     textColor: defaultBackgroundText,
+    lineAttributes: defaultLineAttributes,
   });
 
   const node1 = tree.addNode(tree.root, "A");
@@ -58,7 +59,6 @@ function App() {
   }  
 
   const getDataFromLocal = (): MyData | null => {
-    // localStorage.setItem('myData', '');
 
     const data = localStorage.getItem('myData');
     if (data) {
@@ -103,14 +103,24 @@ function App() {
       console.log("tree is undefined")
     }
   }
+
+  useEffect(() => {
+    console.log(selectedNode)
+  }, [selectedNode])
   
   const handleUpdateSelectedNode = (data: FormInputs) => {
+    console.log(data)
     if (selectedNode && tree) {
       const updatedTree: Tree = cloneTree(tree); // clone tree
       updatedTree.updateNode(selectedNode, {
         value: data.value,
         backgroundColor: data.backgroundColor,
         textColor: data.textColor,
+        lineAttributes: {
+          showArrow: data.arrowedLine,
+          dashed: data.dashedLine,
+          lineColor: data.lineColor,
+        },
       });
       setTree(updatedTree);
       saveTree();      

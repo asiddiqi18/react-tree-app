@@ -1,6 +1,11 @@
 
 export const defaultBackgroundColor = '#a5d6a7';
 export const defaultBackgroundText = '#000000';
+export const defaultLineAttributes = {
+  showArrow: false,
+  dashed: false,
+  lineColor: '#000000',
+};
 
 
 export class TreeNode {
@@ -23,6 +28,13 @@ export type TreeNodeAttributes = {
   value: string,
   backgroundColor: string,
   textColor: string,
+  lineAttributes: LineAttributes
+}
+
+export type LineAttributes = {
+  showArrow: boolean,
+  dashed: boolean,
+  lineColor: string,
 }
 
 export class Tree {
@@ -45,6 +57,7 @@ export class Tree {
       value: value,
       backgroundColor: defaultBackgroundColor,
       textColor: defaultBackgroundText,
+      lineAttributes: defaultLineAttributes,
     });
     parent.children.push(node);
     this.nodes.set(this.nextId, node);
@@ -126,6 +139,7 @@ export class Tree {
       foundNode.attributes.value = treeMeta.value;
       foundNode.attributes.backgroundColor = treeMeta.backgroundColor;
       foundNode.attributes.textColor = treeMeta.textColor;
+      foundNode.attributes.lineAttributes = treeMeta.lineAttributes;
     }
   }
 
@@ -150,10 +164,10 @@ export class Tree {
     // Deserialize a JSON string to a Tree instance
     static deserialize(jsonString: string): Tree {
 
-      console.log({jsonString})
-
       const data = JSON.parse(jsonString);
       const nodesMap = new Map<number, TreeNode>();
+
+      console.log(data)
 
       data.nodes.forEach((serializedNode: { id: any; attributes: any; }) => {
         const { id, attributes } = serializedNode;
@@ -178,14 +192,14 @@ export class Tree {
       const root = nodesMap.get(0);
 
       if (root) {
-        const tree = new Tree({value: root.attributes.value, backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText});
+        const tree = new Tree({value: root.attributes.value, backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText, lineAttributes: defaultLineAttributes});
         tree.root = root;
         tree.nodes = nodesMap;
         tree.nextId = data.nodes.length - 1;
         return tree;
       }
 
-      return new Tree({value: 'hi', backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText});
+      return new Tree({value: 'hi', backgroundColor: defaultBackgroundColor, textColor: defaultBackgroundText, lineAttributes: defaultLineAttributes});
 
     }
   }
