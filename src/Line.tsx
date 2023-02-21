@@ -6,7 +6,7 @@ type Props = {
   showArrow?: boolean;
 };
 
-const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow=false }) => {
+const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow = false }) => {
   if (!fromRect || !toRect) {
     return null;
   }
@@ -29,7 +29,6 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow=false }) => {
     width: width,
     height: height,
     pointerEvents: "none",
-    zIndex: -1,
   };
   const svgStyle: CSSProperties = {
     position: "absolute",
@@ -38,41 +37,54 @@ const LineTo: React.FC<Props> = ({ fromRect, toRect, showArrow=false }) => {
     width: width,
     height: height,
     pointerEvents: "none",
+    zIndex: -1,
   };
-  const pathLength = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-  const pathStyle: CSSProperties = {
+  const primaryLineStyle: CSSProperties = {
+    position: 'relative',
     fill: "none",
     stroke: "black",
     strokeWidth: "2px",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    strokeDasharray: showArrow ? `${pathLength - (48+20)}` : undefined,
 
+    zIndex: -10,
   };
+
+  const arrowHeadStyle: CSSProperties = {
+    position: 'relative',
+    zIndex: -7
+  }
+
+  const slope = (y2 - y1) / (x2 - x1);
+  const theta = Math.atan(slope);
+  const x_var = 68 * Math.cos(theta);
+  const y_var = x_var * Math.tan(theta);
+  const x_final = x2 - Math.sign(x2 - x1) * x_var;
+  const y_final = y2 - Math.sign(x2 - x1) * y_var;
 
   return (
     <div className="line" style={style}>
       <svg style={svgStyle}>
         <path
-          d={`M ${x1} ${y1} L ${x2} ${y2}`}
-          style={pathStyle}
+          id='primary-line'
+          d={`M ${x1} ${y1} L ${x_final} ${y_final !== y2 ? y_final : y2 - y_var}`}
+          style={primaryLineStyle}
           markerEnd="url(#arrowhead)"
         />
-        {showArrow &&
-          <defs>
-            <marker
-              className='fill-gray-600'
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="8"
-              refX="34px"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" />
-            </marker>
-          </defs>
-        }
+          {showArrow && (
+            <defs>
+              <marker
+                className="fill-gray-600 z-10"
+                id="arrowhead"
+                style={arrowHeadStyle}
+                markerWidth="10"
+                markerHeight="8"
+                refX="0"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" />
+              </marker>
+            </defs>
+          )}
       </svg>
     </div>
   );
