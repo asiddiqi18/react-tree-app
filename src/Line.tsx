@@ -45,7 +45,7 @@ const LineTo: React.FC<Props> = ({
 		width: width,
 		height: height,
 		pointerEvents: 'none',
-		zIndex: -1,
+		// zIndex: -1,
 	};
 	const primaryLineStyle: CSSProperties = {
 		position: 'relative',
@@ -61,16 +61,48 @@ const LineTo: React.FC<Props> = ({
 		zIndex: -7,
 	};
 
-	let x_final = x2;
-	let y_final = y2;
+	// let x_start = x1;
+	// let y_start = y1;
 
-	if (showArrow) {
-		const slope = (y2 - y1) / (x2 - x1);
-		const theta = Math.atan(slope);
-		const x_var = 68 * Math.cos(theta);
-		const y_var = x_var * Math.tan(theta);
-		x_final = x2 - Math.sign(x2 - x1) * x_var;
-		y_final = x2 - x1 === 0 ? y2 - y_var : y2 - Math.sign(x2 - x1) * y_var;
+	// let x_end = x2;
+	// let y_end = y2;
+
+	// const slope = (y2 - y1) / (x2 - x1);
+	// const theta = Math.atan(slope);
+	// let x_var = 48 * Math.cos(theta);
+
+	// let y_var = x_var * Math.tan(theta);
+
+	// x_start = x1 + Math.sign(x2 - x1) * x_var;
+	// y_start = x2 - x1 === 0 ? y1 + y_var : y1 + Math.sign(x2 - x1) * y_var;
+
+	// if (showArrow) {
+	// 	x_var += 20;
+	// 	y_var = x_var * Math.tan(theta);
+	// }
+
+	// x_end = x2 - Math.sign(x2 - x1) * x_var;
+	// y_end = x2 - x1 === 0 ? y2 - y_var : y2 - Math.sign(x2 - x1) * y_var;
+
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	const arrowLength = showArrow ? 68 : 48;
+
+	const len = Math.sqrt(dx * dx + dy * dy);
+	const nx = dx / len;
+	const ny = dy / len;
+
+	const x_start = x1 + nx * 48;
+	let y_start = y1 + ny * 48;
+
+	const x_end = x2 - nx * arrowLength;
+	let y_end = y2 - ny * arrowLength;
+
+	if (dx === 0) {
+		const sign = Math.sign(dy);
+		const yOffset = sign * arrowLength;
+		y_start = y1 + sign * 48;
+		y_end = y2 - yOffset;
 	}
 
 	return (
@@ -78,9 +110,9 @@ const LineTo: React.FC<Props> = ({
 			<svg style={svgStyle}>
 				<path
 					id='primary-line'
-					d={`M ${x1} ${y1} L ${x_final} ${y_final}`}
+					d={`M ${x_start} ${y_start} L ${x_end} ${y_end}`}
 					style={primaryLineStyle}
-					markerEnd='url(#arrowhead)'
+					markerEnd={showArrow ? 'url(#arrowhead)' : ''}
 				/>
 				{showArrow && (
 					<defs>

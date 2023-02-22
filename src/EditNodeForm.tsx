@@ -19,7 +19,7 @@ import FormGroup from '@mui/material/FormGroup';
 
 import { TreeNode } from './tree';
 
-export type FormInputs = {
+export type EditNodeFormInputs = {
 	value: string;
 	backgroundColor: string;
 	textColor: string;
@@ -40,7 +40,7 @@ function EditNodeForm({
 	onShift,
 }: {
 	selectedNode: TreeNode;
-	onSubmit: (data: FormInputs) => void;
+	onSubmit: (data: EditNodeFormInputs) => void;
 	onDelete: (node: TreeNode) => void;
 	onInvert: (node: TreeNode) => void;
 	onShift: (node: TreeNode, direction: 'left' | 'right') => void;
@@ -51,7 +51,7 @@ function EditNodeForm({
 		getValues,
 		setValue,
 		formState: { errors },
-	} = useForm<FormInputs>({
+	} = useForm<EditNodeFormInputs>({
 		resolver: yupResolver(schema),
 	});
 

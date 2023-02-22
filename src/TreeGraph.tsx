@@ -3,19 +3,22 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 
+import { EditTreeFormInputs } from './EditTreeForm';
 import Line from './Line';
 import { Tree, TreeNode } from './tree';
 import { useWindowResize } from './useWindowSize';
 
-const NODE_WIDTH = '96px';
-const NODE_HEIGHT = '96px';
+const NODE_WIDTH = 96;
+const NODE_HEIGHT = 96;
 
 function TreeGraph({
 	tree,
+	treeSettings,
 	onNodeClick,
 	onAddNode,
 }: {
 	tree: Tree;
+	treeSettings: EditTreeFormInputs;
 	onNodeClick: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
@@ -32,7 +35,7 @@ function TreeGraph({
 		const bubble = () => {
 			return (
 				<div
-					className='hover:brightness-95 hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer '
+					className='hover:brightness-95 hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer z-10'
 					style={{
 						width: NODE_WIDTH,
 						height: NODE_HEIGHT,
@@ -155,7 +158,10 @@ function TreeGraph({
 	}
 
 	return (
-		<div className='w-full flex justify-center'>
+		<div
+			className='w-full flex justify-center'
+			style={{ backgroundColor: treeSettings.backgroundColor }}
+		>
 			<RenderNode node={tree.root} />
 		</div>
 	);

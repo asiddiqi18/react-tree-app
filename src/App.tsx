@@ -9,10 +9,24 @@ import CloseIcon from '@mui/icons-material/Close';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
+import {
+	Button,
+	Divider,
+	Drawer,
+	Fab,
+	IconButton,
+	TextField,
+	Toolbar,
+} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import Tooltip from '@mui/material/Tooltip';
 
-import EditNodeForm, { FormInputs } from './EditNodeForm';
+import EditNodeForm, { EditNodeFormInputs } from './EditNodeForm';
+import EditTreeForm, { EditTreeFormInputs } from './EditTreeForm';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
 
@@ -124,6 +138,8 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+	const [treeSettings, setTreeSettings] = useState<EditTreeFormInputs>();
 	const imageRef = useRef<HTMLDivElement>(null);
 
 	const handleScreenshotButtonClick = useCallback(() => {
@@ -166,6 +182,11 @@ function App() {
 		} else {
 			setTree(createTreeObj());
 		}
+		setTreeSettings({
+			backgroundColor: '#ffffff',
+			levelHeight: 48,
+			nodeResize: false,
+		});
 	}, []);
 
 	const handleDrawerOpen = () => {
@@ -194,7 +215,7 @@ function App() {
 		}
 	};
 
-	const handleUpdateSelectedNode = (data: FormInputs) => {
+	const handleUpdateSelectedNode = (data: EditNodeFormInputs) => {
 		if (selectedNode && tree) {
 			const updatedTree: Tree = cloneTree(tree); // clone tree
 			updatedTree.updateNode(selectedNode, {
@@ -209,6 +230,12 @@ function App() {
 			});
 			updateTree(updatedTree);
 		}
+	};
+
+	const handleUpdateTreeSettings = (data: EditTreeFormInputs) => {
+		console.log(data);
+		setTreeSettings({ ...data });
+		setDialogOpen(false);
 	};
 
 	const handleAddNode = useCallback(
@@ -298,15 +325,29 @@ function App() {
 					)}
 				</div>
 			</Drawer>
-			{tree && (
+			{tree && treeSettings && (
 				<div className='mt-40' ref={imageRef}>
 					<TreeGraph
 						onNodeClick={handleNodeClick}
 						onAddNode={handleAddNode}
 						tree={tree}
+						treeSettings={treeSettings}
 					/>
 				</div>
 			)}
+
+			<Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+				<DialogTitle>Edit Tree Settings</DialogTitle>
+				<DialogContent>
+					{treeSettings && (
+						<EditTreeForm
+							treeSettings={treeSettings}
+							onSubmit={handleUpdateTreeSettings}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
+
 			<div style={{ position: 'fixed', bottom: '16px', left: '16px' }}>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
@@ -338,7 +379,7 @@ function App() {
 						</Fab>
 					</Tooltip>
 					<Tooltip title='Settings'>
-						<Fab color='secondary' onClick={handleScreenshotButtonClick}>
+						<Fab color='secondary' onClick={() => setDialogOpen(true)}>
 							<SettingsIcon />
 						</Fab>
 					</Tooltip>
