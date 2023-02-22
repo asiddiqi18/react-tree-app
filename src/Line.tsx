@@ -61,47 +61,29 @@ const LineTo: React.FC<Props> = ({
 		zIndex: -7,
 	};
 
-	// let x_start = x1;
-	// let y_start = y1;
-
-	// let x_end = x2;
-	// let y_end = y2;
-
-	// const slope = (y2 - y1) / (x2 - x1);
-	// const theta = Math.atan(slope);
-	// let x_var = 48 * Math.cos(theta);
-
-	// let y_var = x_var * Math.tan(theta);
-
-	// x_start = x1 + Math.sign(x2 - x1) * x_var;
-	// y_start = x2 - x1 === 0 ? y1 + y_var : y1 + Math.sign(x2 - x1) * y_var;
-
-	// if (showArrow) {
-	// 	x_var += 20;
-	// 	y_var = x_var * Math.tan(theta);
-	// }
-
-	// x_end = x2 - Math.sign(x2 - x1) * x_var;
-	// y_end = x2 - x1 === 0 ? y2 - y_var : y2 - Math.sign(x2 - x1) * y_var;
+	const radius = 48;
+	const arrowLength = 20;
 
 	const dx = x2 - x1;
 	const dy = y2 - y1;
-	const arrowLength = showArrow ? 68 : 48;
+	const cutOffLength = showArrow ? radius + arrowLength : radius;
 
 	const len = Math.sqrt(dx * dx + dy * dy);
+
+	// normalized
 	const nx = dx / len;
 	const ny = dy / len;
 
-	const x_start = x1 + nx * 48;
-	let y_start = y1 + ny * 48;
+	const x_start = x1 + nx * radius;
+	let y_start = y1 + ny * radius;
 
-	const x_end = x2 - nx * arrowLength;
-	let y_end = y2 - ny * arrowLength;
+	const x_end = x2 - nx * cutOffLength;
+	let y_end = y2 - ny * cutOffLength;
 
 	if (dx === 0) {
 		const sign = Math.sign(dy);
-		const yOffset = sign * arrowLength;
-		y_start = y1 + sign * 48;
+		const yOffset = sign * cutOffLength;
+		y_start = y1 + sign * radius;
 		y_end = y2 - yOffset;
 	}
 
@@ -117,11 +99,11 @@ const LineTo: React.FC<Props> = ({
 				{showArrow && (
 					<defs>
 						<marker
-							className='fill-gray-600 z-10'
+							className='fill-gray-600'
 							id='arrowhead'
 							style={arrowHeadStyle}
 							markerWidth='10'
-							markerHeight='8'
+							markerHeight='7'
 							refX='0'
 							refY='3.5'
 							orient='auto'
