@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const defaultBackgroundColor = '#a5d6a7';
 export const defaultBackgroundText = '#000000';
 export const defaultLineAttributes = {
@@ -156,6 +158,49 @@ export class Tree {
 			}
 		});
 		return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
+	}
+
+	static generateRandomTree(N: number): Tree {
+		const treeMeta: TreeNodeAttributes = {
+			value: 'root',
+			backgroundColor: '#a5d6a7',
+			textColor: '#000000',
+			lineAttributes: {
+				showArrow: false,
+				dashed: false,
+				lineColor: '#000000',
+			},
+		};
+
+		const tree = new Tree(treeMeta);
+
+		const max_children = 3;
+
+		const queue: TreeNode[] = [tree.root];
+
+		let currentNumberOfNodes = 0;
+		while (currentNumberOfNodes < N - 1 && queue.length > 0) {
+			const node = queue.shift()!;
+			console.log('Current node:', node, 'queue:', queue);
+			const numberOfChildren = Math.min(
+				N - currentNumberOfNodes,
+				1 + Math.floor(Math.random() * max_children)
+			);
+			console.log('Adding', numberOfChildren, 'children');
+			const newChildren: TreeNode[] = [];
+			_.times(numberOfChildren, () => {
+				const value = Math.floor(Math.random() * 1000).toString();
+				console.log('Created', value, 'for', node.attributes.value);
+				const newNode = tree.addNode(node, value);
+				newChildren.push(newNode);
+			});
+			queue.push(..._.shuffle(newChildren));
+
+			currentNumberOfNodes += numberOfChildren;
+			console.log('------\n');
+		}
+
+		return tree;
 	}
 
 	// Deserialize a JSON string to a Tree instance

@@ -5,9 +5,9 @@ import TreeGraph from './TreeGraph';
 import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
-import ListIcon from '@mui/icons-material/List';
 import EditNodeForm, { FormInputs } from './EditNodeForm';
 import _ from 'lodash';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
 // export graph as png
 
 interface MyData {
@@ -296,11 +296,11 @@ function App() {
 					<Fab
 						color='info'
 						onClick={() => {
-							const treeObj = createTreeObj();
+							const treeObj = Tree.generateRandomTree(64);
 							updateTree(treeObj);
 						}}
 					>
-						<ListIcon />
+						<ShuffleIcon />
 					</Fab>
 				</div>
 			</div>
