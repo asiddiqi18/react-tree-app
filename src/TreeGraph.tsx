@@ -1,10 +1,12 @@
-import React from 'react';
-import { memo, useEffect, useRef, useState } from 'react';
-import { Tree, TreeNode } from './tree';
-import Line from './Line';
-import { useWindowResize } from './useWindowSize';
-import { IconButton } from '@mui/material';
+import React, { memo, useEffect, useRef, useState } from 'react';
+
 import AddIcon from '@mui/icons-material/Add';
+import { IconButton } from '@mui/material';
+
+import Line from './Line';
+import { Tree, TreeNode } from './tree';
+import { useWindowResize } from './useWindowSize';
+
 const NODE_WIDTH = '96px';
 const NODE_HEIGHT = '96px';
 

@@ -1,15 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
+
+import { toSvg } from 'html-to-image';
+import _ from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+import ClearIcon from '@mui/icons-material/Clear';
+import CloseIcon from '@mui/icons-material/Close';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
+
+import EditNodeForm, { FormInputs } from './EditNodeForm';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
-import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import ClearIcon from '@mui/icons-material/Clear';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { toSvg } from 'html-to-image';
-import EditNodeForm, { FormInputs } from './EditNodeForm';
-import _ from 'lodash';
 
 interface MyData {
 	tree: Tree;
@@ -267,7 +272,9 @@ function App() {
 			>
 				<Toolbar>
 					<div className='w-full flex justify-between items-center'>
-						<h1>Modify Node &apos;{selectedNode?.attributes.value}&apos;</h1>
+						<h1 className='text-lg'>
+							Modify Node &apos;{selectedNode?.attributes.value}&apos;
+						</h1>
 						<IconButton
 							color='inherit'
 							aria-label='open drawer'
@@ -278,8 +285,8 @@ function App() {
 						</IconButton>
 					</div>
 				</Toolbar>
-				<Divider className='mt-12' />
-				<div className='mx-5 my-12'>
+				<Divider />
+				<div className='my-4'>
 					{selectedNode && (
 						<EditNodeForm
 							selectedNode={selectedNode}
@@ -302,28 +309,39 @@ function App() {
 			)}
 			<div style={{ position: 'fixed', bottom: '16px', left: '16px' }}>
 				<div className='flex gap-5'>
-					<Fab
-						color='error'
-						onClick={() => {
-							if (tree) {
-								handleDeleteNode(tree.root);
-							}
-						}}
-					>
-						<ClearIcon />
-					</Fab>
-					<Fab
-						color='info'
-						onClick={() => {
-							const treeObj = Tree.generateRandomTree(16);
-							updateTree(treeObj);
-						}}
-					>
-						<ShuffleIcon />
-					</Fab>
-					<Fab color='success' onClick={handleScreenshotButtonClick}>
-						<PhotoCameraIcon />
-					</Fab>
+					<Tooltip title='Delete'>
+						<Fab
+							color='error'
+							onClick={() => {
+								if (tree) {
+									handleDeleteNode(tree.root);
+								}
+							}}
+						>
+							<ClearIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Randomize'>
+						<Fab
+							color='info'
+							onClick={() => {
+								const treeObj = Tree.generateRandomTree(16);
+								updateTree(treeObj);
+							}}
+						>
+							<ShuffleIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Screenshot'>
+						<Fab color='success' onClick={handleScreenshotButtonClick}>
+							<PhotoCameraIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Settings'>
+						<Fab color='secondary' onClick={handleScreenshotButtonClick}>
+							<SettingsIcon />
+						</Fab>
+					</Tooltip>
 				</div>
 			</div>
 		</div>

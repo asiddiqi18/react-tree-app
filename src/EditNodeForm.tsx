@@ -1,21 +1,23 @@
-import React from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
-import {
-	Stack,
-	TextField,
-	Button,
-	Divider,
-	Toolbar,
-	Checkbox,
-	FormControlLabel,
-} from '@mui/material';
 import { matchIsValidColor, MuiColorInput } from 'mui-color-input';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { TreeNode } from './tree';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import {
+	Button,
+	Checkbox,
+	Divider,
+	FormControlLabel,
+	Stack,
+	TextField,
+	Toolbar,
+} from '@mui/material';
+import FormGroup from '@mui/material/FormGroup';
+
+import { TreeNode } from './tree';
 
 export type FormInputs = {
 	value: string;
@@ -67,7 +69,8 @@ function EditNodeForm({
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
-			<Stack spacing={3}>
+			<Stack spacing={3} marginX={2.5} mb={4}>
+				<h2>Node Attributes</h2>
 				<Controller
 					name='value'
 					control={control}
@@ -118,6 +121,57 @@ function EditNodeForm({
 						/>
 					)}
 				/>
+			</Stack>
+			<Divider />
+			<Stack gap={3} marginX={2.5} marginY={2}>
+				<h2>Line Attributes</h2>
+				<Controller
+					name='lineColor'
+					control={control}
+					defaultValue='#000000'
+					rules={{ validate: matchIsValidColor }}
+					render={({ field, fieldState }) => (
+						<MuiColorInput
+							{...field}
+							label='Line color'
+							className='my-3'
+							isAlphaHidden
+							format='hex'
+							helperText={fieldState.invalid ? 'Color is invalid' : ''}
+							error={fieldState.invalid}
+						/>
+					)}
+				/>
+				<FormGroup row>
+					<Controller
+						name='dashedLine'
+						control={control}
+						defaultValue={false}
+						render={({ field }) => (
+							<FormControlLabel
+								checked={getValues('dashedLine') ?? false}
+								control={<Checkbox {...field} />}
+								label='Dashed Line'
+							/>
+						)}
+					/>
+					<Controller
+						name='arrowedLine'
+						control={control}
+						defaultValue={false}
+						render={({ field }) => (
+							<FormControlLabel
+								checked={getValues('arrowedLine') ?? false}
+								control={<Checkbox {...field} />}
+								label='Display Arrow'
+							/>
+						)}
+					/>
+				</FormGroup>
+			</Stack>
+			<Divider />
+			<Stack gap={3} marginX={2.5} marginY={2}>
+				<h2>Position</h2>
 				<div className='flex gap-1 justify-between'>
 					<Button
 						startIcon={<KeyboardDoubleArrowLeftIcon />}
@@ -149,55 +203,9 @@ function EditNodeForm({
 				>
 					Invert
 				</Button>
-
-				<Controller
-					name='lineColor'
-					control={control}
-					defaultValue='#000000'
-					rules={{ validate: matchIsValidColor }}
-					render={({ field, fieldState }) => (
-						<MuiColorInput
-							{...field}
-							label='Line color'
-							className='my-3'
-							isAlphaHidden
-							format='hex'
-							helperText={fieldState.invalid ? 'Color is invalid' : ''}
-							error={fieldState.invalid}
-						/>
-					)}
-				/>
-				<div className='flex'>
-					<Controller
-						name='dashedLine'
-						control={control}
-						defaultValue={false}
-						render={({ field }) => (
-							<FormControlLabel
-								checked={getValues('dashedLine') ?? false}
-								control={<Checkbox {...field} />}
-								label='Dashed Line'
-							/>
-						)}
-					/>
-					<Controller
-						name='arrowedLine'
-						control={control}
-						defaultValue={false}
-						render={({ field }) => (
-							<FormControlLabel
-								checked={getValues('arrowedLine') ?? false}
-								control={<Checkbox {...field} />}
-								label='Display Arrow'
-							/>
-						)}
-					/>
-				</div>
 			</Stack>
-
-			<Toolbar />
 			<Divider />
-			<Stack spacing={3}>
+			<Stack spacing={3} marginX={2.5} marginY={5}>
 				<Button
 					variant='contained'
 					color='error'
