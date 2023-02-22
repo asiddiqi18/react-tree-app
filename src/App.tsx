@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
 import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { toJpeg, toPng, toSvg } from 'html-to-image';
 import EditNodeForm, { FormInputs } from './EditNodeForm';
 import _ from 'lodash';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-// export graph as png
 
 interface MyData {
 	tree: Tree;
@@ -118,6 +119,24 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const imageRef = useRef<HTMLDivElement>(null);
+
+	const handleScreenshotButtonClick = useCallback(() => {
+		if (imageRef.current === null) {
+			return;
+		}
+
+		toSvg(imageRef.current, { cacheBust: true, height: 1000 })
+			.then((dataUrl) => {
+				const link = document.createElement('a');
+				link.download = 'my-image-name.svg';
+				link.href = dataUrl;
+				link.click();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [imageRef]);
 
 	const saveDataToLocal = (data: MyData) => {
 		if (tree) {
@@ -232,55 +251,55 @@ function App() {
 	};
 
 	return (
-		<>
-			<div className='m-40'>
-				<Drawer
-					sx={{
+		<div>
+			<Drawer
+				sx={{
+					width: drawerWidth,
+					flexShrink: 0,
+					'& .MuiDrawer-paper': {
 						width: drawerWidth,
-						flexShrink: 0,
-						'& .MuiDrawer-paper': {
-							width: drawerWidth,
-							boxSizing: 'border-box',
-						},
-					}}
-					variant='persistent'
-					anchor='right'
-					open={drawerOpen}
-				>
-					<Toolbar>
-						<div className='w-full flex justify-between items-center'>
-							<h1>Modify Node &apos;{selectedNode?.attributes.value}&apos;</h1>
-							<IconButton
-								color='inherit'
-								aria-label='open drawer'
-								onClick={handleDrawerClose}
-								edge='start'
-							>
-								<CloseIcon />
-							</IconButton>
-						</div>
-					</Toolbar>
-					<Divider className='mt-12' />
-					<div className='mx-5 my-12'>
-						{selectedNode && (
-							<EditNodeForm
-								selectedNode={selectedNode}
-								onSubmit={handleUpdateSelectedNode}
-								onDelete={handleDeleteNode}
-								onInvert={handleInvertNode}
-								onShift={handleShift}
-							/>
-						)}
+						boxSizing: 'border-box',
+					},
+				}}
+				variant='persistent'
+				anchor='right'
+				open={drawerOpen}
+			>
+				<Toolbar>
+					<div className='w-full flex justify-between items-center'>
+						<h1>Modify Node &apos;{selectedNode?.attributes.value}&apos;</h1>
+						<IconButton
+							color='inherit'
+							aria-label='open drawer'
+							onClick={handleDrawerClose}
+							edge='start'
+						>
+							<CloseIcon />
+						</IconButton>
 					</div>
-				</Drawer>
-				{tree && (
+				</Toolbar>
+				<Divider className='mt-12' />
+				<div className='mx-5 my-12'>
+					{selectedNode && (
+						<EditNodeForm
+							selectedNode={selectedNode}
+							onSubmit={handleUpdateSelectedNode}
+							onDelete={handleDeleteNode}
+							onInvert={handleInvertNode}
+							onShift={handleShift}
+						/>
+					)}
+				</div>
+			</Drawer>
+			{tree && (
+				<div className='mt-40' ref={imageRef}>
 					<TreeGraph
 						onNodeClick={handleNodeClick}
 						onAddNode={handleAddNode}
 						tree={tree}
 					/>
-				)}
-			</div>
+				</div>
+			)}
 			<div style={{ position: 'fixed', bottom: '16px', left: '16px' }}>
 				<div className='flex gap-5'>
 					<Fab
@@ -296,15 +315,18 @@ function App() {
 					<Fab
 						color='info'
 						onClick={() => {
-							const treeObj = Tree.generateRandomTree(64);
+							const treeObj = Tree.generateRandomTree(16);
 							updateTree(treeObj);
 						}}
 					>
 						<ShuffleIcon />
 					</Fab>
+					<Fab color='success' onClick={handleScreenshotButtonClick}>
+						<PhotoCameraIcon />
+					</Fab>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
 

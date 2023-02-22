@@ -208,8 +208,6 @@ export class Tree {
 		const data = JSON.parse(jsonString);
 		const nodesMap = new Map<number, TreeNode>();
 
-		console.log(data);
-
 		data.nodes.forEach((serializedNode: { id: any; attributes: any }) => {
 			const { id, attributes } = serializedNode;
 			const node = new TreeNode(id, attributes);
