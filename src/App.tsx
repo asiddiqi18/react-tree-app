@@ -7,7 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { toJpeg, toPng, toSvg } from 'html-to-image';
+import { toSvg } from 'html-to-image';
 import EditNodeForm, { FormInputs } from './EditNodeForm';
 import _ from 'lodash';
 

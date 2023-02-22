@@ -1,5 +1,5 @@
 import React from 'react';
-import { CSSProperties, useEffect } from 'react';
+import { CSSProperties } from 'react';
 
 type Props = {
 	fromRect: DOMRect | null;
