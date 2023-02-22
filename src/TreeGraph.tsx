@@ -35,12 +35,14 @@ function TreeGraph({
 		const bubble = () => {
 			return (
 				<div
-					className='hover:brightness-95 hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer z-10'
+					className='hover:brightness-95 hover:shadow-xl mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer z-10'
 					style={{
 						width: NODE_WIDTH,
 						height: NODE_HEIGHT,
 						backgroundColor: node.attributes.backgroundColor,
 						color: node.attributes.textColor,
+						marginTop: treeSettings.levelHeight / 2,
+						marginBottom: treeSettings.levelHeight / 2,
 						// borderStyle: 'inset',
 						// borderWidth: 4,
 						// borderColor: 'red',
