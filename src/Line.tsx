@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 
-type Props = {
+type LineProps = {
 	fromRect: DOMRect | null;
 	toRect: DOMRect | null;
 	showArrow?: boolean;
@@ -8,7 +8,7 @@ type Props = {
 	lineColor?: string;
 };
 
-const LineTo: React.FC<Props> = ({
+const LineTo: React.FC<LineProps> = ({
 	fromRect,
 	toRect,
 	showArrow = false,
@@ -58,7 +58,7 @@ const LineTo: React.FC<Props> = ({
 
 	const arrowHeadStyle: CSSProperties = {
 		position: 'relative',
-		zIndex: -7,
+		fill: lineColor,
 	};
 
 	const majorAxis = fromRect.width;
@@ -118,7 +118,6 @@ const LineTo: React.FC<Props> = ({
 				{showArrow && (
 					<defs>
 						<marker
-							className='fill-gray-600'
 							id='arrowhead'
 							style={arrowHeadStyle}
 							markerWidth='10'

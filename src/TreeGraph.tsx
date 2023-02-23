@@ -3,9 +3,9 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 
-import { EditTreeFormInputs } from './EditTreeForm';
 import Line from './Line';
 import { Tree, TreeNode } from './tree';
+import { EditTreeFormInputs } from './types';
 import { useWindowResize } from './useWindowSize';
 
 const NODE_WIDTH = 96;
@@ -36,11 +36,12 @@ function TreeGraph({
 			return (
 				<div
 					className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
-					// <div class="w-48 h-24 rounded-full rounded-t-24 rounded-b-24 bg-gray-500"></div>
 					style={{
+						minHeight: NODE_HEIGHT,
 						minWidth: NODE_WIDTH,
+						maxWidth: NODE_WIDTH * 4,
 						width: treeSettings.nodeResize ? undefined : NODE_WIDTH,
-						height: NODE_HEIGHT,
+						height: treeSettings.nodeResize ? undefined : NODE_HEIGHT,
 						borderRadius: '50%',
 						backgroundColor: node.attributes.backgroundColor,
 						color: node.attributes.textColor,
@@ -151,9 +152,7 @@ function TreeGraph({
 					key={node.id}
 					fromRect={fromRect}
 					toRect={toRect}
-					lineColor={node.attributes.lineAttributes.lineColor}
-					dashed={node.attributes.lineAttributes.dashed}
-					showArrow={node.attributes.lineAttributes.showArrow}
+					{...node.attributes.lineAttributes}
 				/>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
 			</div>

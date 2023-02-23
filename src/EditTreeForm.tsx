@@ -13,12 +13,7 @@ import {
 	TextField,
 } from '@mui/material';
 
-export type EditTreeFormInputs = {
-	backgroundColor: string;
-	nodeResize: boolean;
-	levelHeight: number;
-	siblingSpace: number;
-};
+import { EditTreeFormInputs } from './types';
 
 const schema = yup.object().shape({
 	backgroundColor: yup.string().required('value is required'),
@@ -134,13 +129,8 @@ function EditTreeForm({
 				</FormGroup>
 			</Stack>
 
-			<Stack spacing={3} marginX={2.5} marginY={5}>
-				<Button
-					type='submit'
-					variant='contained'
-					color='primary'
-					onClick={() => console.log('Test')}
-				>
+			<Stack spacing={3} marginY={5}>
+				<Button type='submit' variant='contained' color='primary'>
 					Save
 				</Button>
 			</Stack>

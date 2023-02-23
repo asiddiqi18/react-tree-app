@@ -13,20 +13,11 @@ import {
 	FormControlLabel,
 	Stack,
 	TextField,
-	Toolbar,
 } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 
 import { TreeNode } from './tree';
-
-export type EditNodeFormInputs = {
-	value: string;
-	backgroundColor: string;
-	textColor: string;
-	lineColor: string;
-	dashedLine: boolean;
-	arrowedLine: boolean;
-};
+import { EditNodeFormInputs } from './types';
 
 const schema = yup.object().shape({
 	value: yup.string().required('value is required'),

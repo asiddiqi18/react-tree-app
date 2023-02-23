@@ -9,31 +9,18 @@ import CloseIcon from '@mui/icons-material/Close';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import {
-	Button,
-	Divider,
-	Drawer,
-	Fab,
-	IconButton,
-	TextField,
-	Toolbar,
-} from '@mui/material';
+import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Tooltip from '@mui/material/Tooltip';
 
-import EditNodeForm, { EditNodeFormInputs } from './EditNodeForm';
-import EditTreeForm, { EditTreeFormInputs } from './EditTreeForm';
+import EditNodeForm from './EditNodeForm';
+import EditTreeForm from './EditTreeForm';
+import { getDataFromLocal, saveDataToLocal } from './localSotrage';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
-
-interface MyData {
-	tree: Tree;
-	treeSettings: EditTreeFormInputs;
-}
+import { EditNodeFormInputs, EditTreeFormInputs, LocalData } from './types';
 
 function createTreeObj() {
 	const data = {
@@ -43,76 +30,6 @@ function createTreeObj() {
 				id: 0,
 				attributes: {
 					value: 'root',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [1, 2],
-			},
-			{
-				id: 1,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 2,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [3, 4, 5],
-			},
-			{
-				id: 3,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 4,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 5,
-				attributes: {
-					value: 'new',
 					backgroundColor: '#a5d6a7',
 					textColor: '#000000',
 					lineAttributes: {
@@ -143,71 +60,19 @@ function App() {
 	const [treeSettings, setTreeSettings] = useState<EditTreeFormInputs>();
 	const imageRef = useRef<HTMLDivElement>(null);
 
-	const handleScreenshotButtonClick = useCallback(() => {
-		if (imageRef.current === null) {
-			return;
-		}
-
-		toSvg(imageRef.current, { cacheBust: true, height: 1000 })
-			.then((dataUrl) => {
-				const link = document.createElement('a');
-				link.download = 'my-image-name.svg';
-				link.href = dataUrl;
-				link.click();
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, [imageRef]);
-
-	const saveDataToLocal = (data: MyData) => {
-		console.log('Trying to save', tree, treeSettings);
-		if (tree && treeSettings) {
-			const saved = `{"tree": ${data.tree.serialize()}, "treeSettings": ${JSON.stringify(
-				data.treeSettings
-			)}}`;
-			console.log(saved);
-			localStorage.setItem('myData', saved);
-		}
-	};
-
-	const getDataFromLocal = (): MyData | null => {
-		const data = localStorage.getItem('myData');
-		if (data) {
-			console.log('getting data from local...');
-
-			const parsed = JSON.parse(data);
-			let treeSettingsParsed;
-			if (parsed.treeSettings) {
-				treeSettingsParsed = parsed.treeSettings;
-			}
-			return {
-				tree: Tree.deserialize(parsed.tree),
-				treeSettings: treeSettingsParsed,
-			};
-		} else {
-			console.log('failed to get data from local');
-		}
-		return null;
-	};
-
 	useEffect(() => {
 		const treeObj = getDataFromLocal();
-		console.log(treeObj);
+
 		if (treeObj?.tree) {
 			const tree1: Tree = treeObj.tree;
 			const importedTree = cloneTree(tree1);
 			setTree(importedTree);
-			console.log('imported tree');
 		} else {
-			console.log('Drawing from default tree', tree);
 			setTree(createTreeObj());
 		}
 		if (treeObj?.treeSettings) {
 			setTreeSettings(treeObj?.treeSettings);
-			console.log('imported settings', treeObj?.treeSettings);
 		} else {
-			console.log('Drawing from default settings');
 			setTreeSettings({
 				backgroundColor: '#ffffff',
 				levelHeight: 48,
@@ -217,7 +82,22 @@ function App() {
 		}
 	}, []);
 
-	console.log(tree, treeSettings);
+	const handleScreenshotButtonClick = useCallback(() => {
+		if (imageRef.current === null) {
+			return;
+		}
+
+		toSvg(imageRef.current, { cacheBust: true, height: 1000 })
+			.then((dataUrl) => {
+				const link = document.createElement('a');
+				link.download = 'my-tree.svg';
+				link.href = dataUrl;
+				link.click();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [imageRef]);
 
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
@@ -238,7 +118,7 @@ function App() {
 	const updateTree = (newTree: Tree) => {
 		if (newTree && treeSettings) {
 			setTree(newTree);
-			const myData: MyData = { tree: newTree, treeSettings };
+			const myData: LocalData = { tree: newTree, treeSettings };
 			_.debounce(() => {
 				saveDataToLocal(myData);
 			}, 500)();
@@ -263,7 +143,6 @@ function App() {
 	};
 
 	const handleUpdateTreeSettings = (data: EditTreeFormInputs) => {
-		console.log('REQUESTED', data);
 		setTreeSettings({ ...data });
 		setDialogOpen(false);
 		if (tree && treeSettings) {
@@ -369,8 +248,21 @@ function App() {
 				</div>
 			)}
 
-			<Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-				<DialogTitle>Edit Tree Settings</DialogTitle>
+			<Dialog open={dialogOpen}>
+				<DialogTitle>
+					Edit Tree Settings{' '}
+					<IconButton
+						aria-label='close'
+						onClick={() => setDialogOpen(false)}
+						sx={{
+							position: 'absolute',
+							right: 8,
+							top: 8,
+						}}
+					>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
 				<DialogContent>
 					{treeSettings && (
 						<EditTreeForm

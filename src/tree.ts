@@ -205,7 +205,6 @@ export class Tree {
 
 	// Deserialize a JSON string to a Tree instance
 	static deserialize(tree: any): Tree {
-		console.log('Deserializing');
 		const data = tree;
 		const nodesMap = new Map<number, TreeNode>();
 
