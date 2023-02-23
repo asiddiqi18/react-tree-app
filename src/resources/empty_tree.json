@@ -1,0 +1,19 @@
+{
+	"rootId": 0,
+	"nodes": [
+		{
+			"id": 0,
+			"attributes": {
+				"value": "root",
+				"backgroundColor": "#a5d6a7",
+				"textColor": "#000000",
+				"lineAttributes": {
+					"showArrow": false,
+					"dashed": false,
+					"lineColor": "#000000"
+				}
+			},
+			"childrenIds": []
+		}
+	]
+}

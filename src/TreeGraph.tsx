@@ -32,54 +32,47 @@ function TreeGraph({
 			onAddNode(node);
 		};
 
-		const bubble = () => {
-			return (
-				<div
-					className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
-					style={{
-						minHeight: NODE_HEIGHT,
-						minWidth: NODE_WIDTH,
-						maxWidth: NODE_WIDTH * 4,
-						width: treeSettings.nodeResize ? undefined : NODE_WIDTH,
-						height: treeSettings.nodeResize ? undefined : NODE_HEIGHT,
-						borderRadius: '50%',
-						backgroundColor: node.attributes.backgroundColor,
-						color: node.attributes.textColor,
-					}}
-					onClick={() => onNodeClick(node)}
-					onMouseEnter={() => setHover(true)}
-					onMouseLeave={() => setHover(false)}
-				>
-					<div className='flex flex-col justify-between items-center h-full'>
-						<div className='flex-1'></div>
-						<p className='pt-1 flex-1 break-words'>
-							{node.id} - {node.attributes.value}
-						</p>
-						<div className='flex-1'>
-							{hover && (
-								<IconButton
-									onClick={(e) => handlePlusClick(e)}
-									color='success'
-									sx={{
-										'&:hover': {
-											backgroundColor: '#81c784',
-										},
-										height: 16,
-										width: 16,
-										bottom: 0,
-										padding: 1.4,
-									}}
-								>
-									<AddIcon />
-								</IconButton>
-							)}
-						</div>
+		return (
+			<div
+				className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+				style={{
+					minWidth: NODE_WIDTH,
+					maxWidth: NODE_WIDTH * 4,
+					width: treeSettings.nodeResize ? undefined : NODE_WIDTH,
+					height: NODE_HEIGHT,
+					borderRadius: '50%',
+					backgroundColor: node.attributes.backgroundColor,
+					color: node.attributes.textColor,
+				}}
+				onClick={() => onNodeClick(node)}
+				onMouseEnter={() => setHover(true)}
+				onMouseLeave={() => setHover(false)}
+			>
+				<div className='flex flex-col justify-between items-center h-full'>
+					<div className='flex-1'></div>
+					<p className='pt-1 flex-1 break-words'>{node.attributes.value}</p>
+					<div className='flex-1'>
+						{hover && (
+							<IconButton
+								onClick={(e) => handlePlusClick(e)}
+								color='success'
+								sx={{
+									'&:hover': {
+										backgroundColor: '#81c784',
+									},
+									height: 16,
+									width: 16,
+									bottom: 0,
+									padding: 1.4,
+								}}
+							>
+								<AddIcon />
+							</IconButton>
+						)}
 					</div>
 				</div>
-			);
-		};
-
-		return bubble();
+			</div>
+		);
 	}
 
 	function NodeForest({

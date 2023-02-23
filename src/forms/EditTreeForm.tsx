@@ -13,7 +13,7 @@ import {
 	TextField,
 } from '@mui/material';
 
-import { EditTreeFormInputs } from './types';
+import { EditTreeFormInputs } from '../types';
 
 const schema = yup.object().shape({
 	backgroundColor: yup.string().required('value is required'),

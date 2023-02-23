@@ -15,35 +15,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Tooltip from '@mui/material/Tooltip';
 
-import EditNodeForm from './EditNodeForm';
-import EditTreeForm from './EditTreeForm';
+import EditNodeForm from './forms/EditNodeForm';
+import EditTreeForm from './forms/EditTreeForm';
 import { getDataFromLocal, saveDataToLocal } from './localSotrage';
+import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
 import { EditNodeFormInputs, EditTreeFormInputs, LocalData } from './types';
 
 function createTreeObj() {
-	const data = {
-		rootId: 0,
-		nodes: [
-			{
-				id: 0,
-				attributes: {
-					value: 'root',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-		],
-	};
-
-	return Tree.deserialize(data);
+	return Tree.deserialize(EmptyTree);
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -194,6 +175,10 @@ function App() {
 		}
 	};
 
+	const generateRandomTreeFunc = async () => {
+		return await Tree.generateRandomTree(16);
+	};
+
 	return (
 		<div>
 			<Drawer
@@ -280,7 +265,8 @@ function App() {
 							color='error'
 							onClick={() => {
 								if (tree) {
-									handleDeleteNode(tree.root);
+									const treeObj = createTreeObj();
+									updateTree(treeObj);
 								}
 							}}
 						>
@@ -290,8 +276,8 @@ function App() {
 					<Tooltip title='Randomize'>
 						<Fab
 							color='info'
-							onClick={() => {
-								const treeObj = Tree.generateRandomTree(16);
+							onClick={async () => {
+								const treeObj = await generateRandomTreeFunc();
 								updateTree(treeObj);
 							}}
 						>

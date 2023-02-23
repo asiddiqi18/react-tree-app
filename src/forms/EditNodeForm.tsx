@@ -16,8 +16,8 @@ import {
 } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 
-import { TreeNode } from './tree';
-import { EditNodeFormInputs } from './types';
+import { TreeNode } from '../tree';
+import { EditNodeFormInputs } from '../types';
 
 const schema = yup.object().shape({
 	value: yup.string().required('value is required'),

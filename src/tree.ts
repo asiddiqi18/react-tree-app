@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import RandomWords from './resources/random_words.json';
+
 export const defaultBackgroundColor = '#a5d6a7';
 export const defaultBackgroundText = '#000000';
 export const defaultLineAttributes = {
@@ -160,7 +162,7 @@ export class Tree {
 		return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
 	}
 
-	static generateRandomTree(N: number): Tree {
+	static async generateRandomTree(N: number): Promise<Tree> {
 		const treeMeta: TreeNodeAttributes = {
 			value: 'root',
 			backgroundColor: '#a5d6a7',
@@ -189,9 +191,12 @@ export class Tree {
 			console.log('Adding', numberOfChildren, 'children');
 			const newChildren: TreeNode[] = [];
 			_.times(numberOfChildren, () => {
-				const value = Math.floor(Math.random() * 1000).toString();
-				console.log('Created', value, 'for', node.attributes.value);
-				const newNode = tree.addNode(node, value);
+				const randomIndex = Math.floor(
+					Math.random() * RandomWords.words.length
+				);
+				const randomWord = RandomWords.words[randomIndex];
+
+				const newNode = tree.addNode(node, randomWord);
 				newChildren.push(newNode);
 			});
 			queue.push(..._.shuffle(newChildren));
