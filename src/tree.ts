@@ -39,10 +39,6 @@ export class Tree {
 		this.nextId = 0;
 	}
 
-	isMostRecentNode(node: TreeNode): boolean {
-		return node.id === this.nextId;
-	}
-
 	addNode(parent: TreeNode, value: string): TreeNode {
 		const node = new TreeNode(++this.nextId, {
 			...defaultNodeAttributes,
@@ -77,6 +73,24 @@ export class Tree {
 			result.push(levelNodes);
 		}
 		return result;
+	}
+
+	findLevel(node: TreeNode): number | undefined {
+		const queue: [TreeNode, number][] = [[this.root, 0]];
+
+		while (queue.length > 0) {
+			const [currentNode, level] = queue.shift()!;
+
+			if (currentNode === node) {
+				return level;
+			}
+
+			for (const child of currentNode.children) {
+				queue.push([child, level + 1]);
+			}
+		}
+
+		return undefined; // Node not found in tree
 	}
 
 	removeNode(node: TreeNode): void {
@@ -146,21 +160,6 @@ export class Tree {
 		}
 	}
 
-	serialize(): string {
-		const serializedNodes: any[] = [];
-		this.nodes.forEach((node) => {
-			if (node) {
-				const { id, attributes, children } = node;
-				serializedNodes.push({
-					id,
-					attributes,
-					childrenIds: children.map((child) => child.id),
-				});
-			}
-		});
-		return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
-	}
-
 	static async generateRandomTree(N: number): Promise<Tree> {
 		const treeMeta = defaultNodeAttributes;
 		const tree = new Tree(treeMeta);
@@ -172,12 +171,10 @@ export class Tree {
 		let currentNumberOfNodes = 0;
 		while (currentNumberOfNodes < N - 1 && queue.length > 0) {
 			const node = queue.shift()!;
-			console.log('Current node:', node, 'queue:', queue);
 			const numberOfChildren = Math.min(
 				N - currentNumberOfNodes,
 				1 + Math.floor(Math.random() * max_children)
 			);
-			console.log('Adding', numberOfChildren, 'children');
 			const newChildren: TreeNode[] = [];
 			_.times(numberOfChildren, () => {
 				const randomIndex = Math.floor(
@@ -191,10 +188,24 @@ export class Tree {
 			queue.push(..._.shuffle(newChildren));
 
 			currentNumberOfNodes += numberOfChildren;
-			console.log('------\n');
 		}
 
 		return tree;
+	}
+
+	serialize(): string {
+		const serializedNodes: any[] = [];
+		this.nodes.forEach((node) => {
+			if (node) {
+				const { id, attributes, children } = node;
+				serializedNodes.push({
+					id,
+					attributes,
+					childrenIds: children.map((child) => child.id),
+				});
+			}
+		});
+		return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
 	}
 
 	// Deserialize a JSON string to a Tree instance

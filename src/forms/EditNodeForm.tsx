@@ -98,6 +98,8 @@ function EditNodeForm({
 							error={!!errors.value}
 							helperText={errors.value?.message}
 							fullWidth
+							multiline
+							maxRows={4}
 							margin='normal'
 						/>
 					)}
@@ -186,7 +188,7 @@ function EditNodeForm({
 			</Stack>
 			<Divider />
 			<Stack gap={3} marginX={2.5} marginY={2}>
-				<h2>Position</h2>
+				<h2>Size and Position</h2>
 				<div className='flex gap-4 justify-between'>
 					<Controller
 						name='nodeWidth'
@@ -200,6 +202,9 @@ function EditNodeForm({
 								id='standard-number'
 								label='Node Width'
 								type='number'
+								inputProps={{
+									step: '10',
+								}}
 								InputLabelProps={{
 									shrink: true,
 								}}
@@ -218,6 +223,9 @@ function EditNodeForm({
 								id='standard-number'
 								label='Node Height'
 								type='number'
+								inputProps={{
+									step: '10',
+								}}
 								InputLabelProps={{
 									shrink: true,
 								}}

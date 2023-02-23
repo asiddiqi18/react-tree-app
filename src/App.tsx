@@ -96,7 +96,7 @@ function App() {
 	);
 
 	const updateTree = (newTree: Tree) => {
-		if (newTree && treeSettings) {
+		if (newTree && tree && treeSettings) {
 			setTree(newTree);
 			const myData: LocalData = { tree: newTree, treeSettings };
 			_.debounce(() => {
@@ -116,58 +116,67 @@ function App() {
 	const handleUpdateTreeSettings = (data: TreeSettings) => {
 		setTreeSettings({ ...data });
 		setDialogOpen(false);
-		if (tree && treeSettings) {
-			saveDataToLocal({ tree, treeSettings: data });
+		if (!tree) {
+			return;
 		}
+		saveDataToLocal({ tree, treeSettings: data });
 	};
 
 	const handleAddNode = useCallback(
 		(node: TreeNode) => {
-			if (tree) {
-				const updatedTree: Tree = cloneTree(tree);
-				updatedTree.addNode(node, 'new');
-				updateTree(updatedTree);
+			if (!tree) {
+				return;
 			}
+			const updatedTree: Tree = cloneTree(tree);
+			updatedTree.addNode(node, 'new');
+			updateTree(updatedTree);
 		},
 		[tree]
 	);
 
 	const handleInvertNode = useCallback(
 		(node: TreeNode) => {
-			if (tree) {
-				const updatedTree: Tree = cloneTree(tree);
-				updatedTree.invertSubtree(node);
-				updateTree(updatedTree);
+			if (!tree) {
+				return;
 			}
+			const updatedTree: Tree = cloneTree(tree);
+			updatedTree.invertSubtree(node);
+			updateTree(updatedTree);
 		},
 		[tree]
 	);
 
 	const handleDeleteNode = (node: TreeNode) => {
-		if (tree) {
-			const updatedTree: Tree = cloneTree(tree);
-			updatedTree.removeNode(node);
-			updateTree(updatedTree);
-			setSelectedNode(undefined);
-			handleDrawerClose();
+		if (!tree) {
+			return;
 		}
+		const updatedTree: Tree = cloneTree(tree);
+		updatedTree.removeNode(node);
+		updateTree(updatedTree);
+		setSelectedNode(undefined);
+		handleDrawerClose();
 	};
 
 	const handleShift = (node: TreeNode, direction: 'left' | 'right') => {
-		if (tree) {
-			const updatedTree: Tree = cloneTree(tree);
-			if (direction === 'left') {
-				updatedTree.shiftLeft(node);
-			} else if (direction === 'right') {
-				updatedTree.shiftRight(node);
-			}
-			updateTree(updatedTree);
+		if (!tree) {
+			return;
 		}
+		const updatedTree: Tree = cloneTree(tree);
+		if (direction === 'left') {
+			updatedTree.shiftLeft(node);
+		} else if (direction === 'right') {
+			updatedTree.shiftRight(node);
+		}
+		updateTree(updatedTree);
 	};
 
 	const generateRandomTreeFunc = async () => {
 		return await Tree.generateRandomTree(16);
 	};
+
+	if (!tree || !treeSettings) {
+		return <></>;
+	}
 
 	return (
 		<div>
@@ -186,8 +195,8 @@ function App() {
 			>
 				<Toolbar>
 					<div className='w-full flex justify-between items-center'>
-						<h1 className='text-lg'>
-							Modify Node &apos;{selectedNode?.attributes.value}&apos;
+						<h1 className='text-lg truncate mr-3'>
+							Modify Node - {selectedNode?.attributes.value}
 						</h1>
 						<IconButton
 							color='inherit'
@@ -202,13 +211,15 @@ function App() {
 				<Divider />
 				<div className='my-4'>
 					{selectedNode && (
-						<EditNodeForm
-							selectedNode={selectedNode}
-							onSubmit={handleUpdateSelectedNode}
-							onDelete={handleDeleteNode}
-							onInvert={handleInvertNode}
-							onShift={handleShift}
-						/>
+						<div>
+							<EditNodeForm
+								selectedNode={selectedNode}
+								onSubmit={handleUpdateSelectedNode}
+								onDelete={handleDeleteNode}
+								onInvert={handleInvertNode}
+								onShift={handleShift}
+							/>
+						</div>
 					)}
 				</div>
 			</Drawer>
@@ -239,12 +250,10 @@ function App() {
 					</IconButton>
 				</DialogTitle>
 				<DialogContent>
-					{treeSettings && (
-						<EditTreeForm
-							treeSettings={treeSettings}
-							onSubmit={handleUpdateTreeSettings}
-						/>
-					)}
+					<EditTreeForm
+						treeSettings={treeSettings}
+						onSubmit={handleUpdateTreeSettings}
+					/>
 				</DialogContent>
 			</Dialog>
 
