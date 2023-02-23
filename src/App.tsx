@@ -112,11 +112,7 @@ function App() {
 				value: data.value,
 				backgroundColor: data.backgroundColor,
 				textColor: data.textColor,
-				lineAttributes: {
-					showArrow: data.lineAttributes.showArrow,
-					dashedLine: data.lineAttributes.dashedLine,
-					lineColor: data.lineAttributes.lineColor,
-				},
+				lineAttributes: { ...data.lineAttributes },
 			});
 			updateTree(updatedTree);
 		}

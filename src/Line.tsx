@@ -4,7 +4,7 @@ type LineProps = {
 	fromRect: DOMRect | null;
 	toRect: DOMRect | null;
 	showArrow?: boolean;
-	dashed?: boolean;
+	dashedLine?: boolean;
 	lineColor?: string;
 };
 
@@ -12,7 +12,7 @@ const LineTo: React.FC<LineProps> = ({
 	fromRect,
 	toRect,
 	showArrow = false,
-	dashed = false,
+	dashedLine: dashed = false,
 	lineColor = 'black',
 }) => {
 	if (!fromRect || !toRect) {
