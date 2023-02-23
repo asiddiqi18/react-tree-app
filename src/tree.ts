@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
 import RandomWords from './resources/random_words.json';
+import { TreeNodeAttributes } from './types';
 
 export const defaultBackgroundColor = '#a5d6a7';
 export const defaultBackgroundText = '#000000';
 export const defaultLineAttributes = {
 	showArrow: false,
-	dashed: false,
+	dashedLine: false,
 	lineColor: '#000000',
 };
 
@@ -21,19 +22,6 @@ export class TreeNode {
 		this.attributes = attributes;
 	}
 }
-
-export type TreeNodeAttributes = {
-	value: string;
-	backgroundColor: string;
-	textColor: string;
-	lineAttributes: LineAttributes;
-};
-
-export type LineAttributes = {
-	showArrow: boolean;
-	dashed: boolean;
-	lineColor: string;
-};
 
 export class Tree {
 	root: TreeNode;
@@ -169,7 +157,7 @@ export class Tree {
 			textColor: '#000000',
 			lineAttributes: {
 				showArrow: false,
-				dashed: false,
+				dashedLine: false,
 				lineColor: '#000000',
 			},
 		};

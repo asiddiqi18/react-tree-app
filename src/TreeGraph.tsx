@@ -5,7 +5,7 @@ import { IconButton } from '@mui/material';
 
 import Line from './Line';
 import { Tree, TreeNode } from './tree';
-import { EditTreeFormInputs } from './types';
+import { TreeSettings } from './types';
 import { useWindowResize } from './useWindowSize';
 
 const NODE_WIDTH = 96;
@@ -18,7 +18,7 @@ function TreeGraph({
 	onAddNode,
 }: {
 	tree: Tree;
-	treeSettings: EditTreeFormInputs;
+	treeSettings: TreeSettings;
 	onNodeClick: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
@@ -36,9 +36,7 @@ function TreeGraph({
 			<div
 				className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
-					minWidth: NODE_WIDTH,
-					maxWidth: NODE_WIDTH * 4,
-					width: treeSettings.nodeResize ? undefined : NODE_WIDTH,
+					width: NODE_WIDTH,
 					height: NODE_HEIGHT,
 					borderRadius: '50%',
 					backgroundColor: node.attributes.backgroundColor,

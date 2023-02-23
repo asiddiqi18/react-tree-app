@@ -1,22 +1,25 @@
 import { Tree } from './tree';
 
-export type EditTreeFormInputs = {
+export type TreeSettings = {
 	backgroundColor: string;
-	nodeResize: boolean;
 	levelHeight: number;
 	siblingSpace: number;
 };
 
-export type EditNodeFormInputs = {
+export interface LocalData {
+	tree: Tree;
+	treeSettings: TreeSettings;
+}
+
+export type TreeNodeAttributes = {
 	value: string;
 	backgroundColor: string;
 	textColor: string;
-	lineColor: string;
-	dashedLine: boolean;
-	arrowedLine: boolean;
+	lineAttributes: LineAttributes;
 };
 
-export interface LocalData {
-	tree: Tree;
-	treeSettings: EditTreeFormInputs;
-}
+export type LineAttributes = {
+	showArrow: boolean;
+	dashedLine: boolean;
+	lineColor: string;
+};

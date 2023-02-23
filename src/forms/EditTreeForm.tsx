@@ -13,7 +13,7 @@ import {
 	TextField,
 } from '@mui/material';
 
-import { EditTreeFormInputs } from '../types';
+import { TreeSettings } from '../types';
 
 const schema = yup.object().shape({
 	backgroundColor: yup.string().required('value is required'),
@@ -35,8 +35,8 @@ function EditTreeForm({
 	treeSettings,
 	onSubmit,
 }: {
-	treeSettings: EditTreeFormInputs;
-	onSubmit: (data: EditTreeFormInputs) => void;
+	treeSettings: TreeSettings;
+	onSubmit: (data: TreeSettings) => void;
 }) {
 	const {
 		control,
@@ -44,14 +44,13 @@ function EditTreeForm({
 		getValues,
 		setValue,
 		formState: { errors },
-	} = useForm<EditTreeFormInputs>({
+	} = useForm<TreeSettings>({
 		resolver: yupResolver(schema),
 	});
 
 	useEffect(() => {
 		if (treeSettings) {
 			setValue('backgroundColor', treeSettings.backgroundColor);
-			setValue('nodeResize', treeSettings.nodeResize);
 			setValue('levelHeight', treeSettings.levelHeight);
 			setValue('siblingSpace', treeSettings.siblingSpace);
 		}
@@ -113,20 +112,6 @@ function EditTreeForm({
 						/>
 					)}
 				/>
-				<FormGroup row>
-					<Controller
-						name='nodeResize'
-						control={control}
-						defaultValue={false}
-						render={({ field }) => (
-							<FormControlLabel
-								checked={getValues('nodeResize') ?? false}
-								control={<Checkbox {...field} />}
-								label='Resize nodes to fit text'
-							/>
-						)}
-					/>
-				</FormGroup>
 			</Stack>
 
 			<Stack spacing={3} marginY={5}>

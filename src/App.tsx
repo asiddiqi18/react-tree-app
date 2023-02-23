@@ -21,7 +21,7 @@ import { getDataFromLocal, saveDataToLocal } from './localSotrage';
 import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
-import { EditNodeFormInputs, EditTreeFormInputs, LocalData } from './types';
+import { LocalData, TreeNodeAttributes, TreeSettings } from './types';
 
 function createTreeObj() {
 	return Tree.deserialize(EmptyTree);
@@ -38,7 +38,7 @@ function App() {
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 	const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-	const [treeSettings, setTreeSettings] = useState<EditTreeFormInputs>();
+	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const imageRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -58,7 +58,6 @@ function App() {
 				backgroundColor: '#ffffff',
 				levelHeight: 48,
 				siblingSpace: 5,
-				nodeResize: false,
 			});
 		}
 	}, []);
@@ -106,7 +105,7 @@ function App() {
 		}
 	};
 
-	const handleUpdateSelectedNode = (data: EditNodeFormInputs) => {
+	const handleUpdateSelectedNode = (data: TreeNodeAttributes) => {
 		if (selectedNode && tree) {
 			const updatedTree: Tree = cloneTree(tree); // clone tree
 			updatedTree.updateNode(selectedNode, {
@@ -114,16 +113,16 @@ function App() {
 				backgroundColor: data.backgroundColor,
 				textColor: data.textColor,
 				lineAttributes: {
-					showArrow: data.arrowedLine,
-					dashed: data.dashedLine,
-					lineColor: data.lineColor,
+					showArrow: data.lineAttributes.showArrow,
+					dashedLine: data.lineAttributes.dashedLine,
+					lineColor: data.lineAttributes.lineColor,
 				},
 			});
 			updateTree(updatedTree);
 		}
 	};
 
-	const handleUpdateTreeSettings = (data: EditTreeFormInputs) => {
+	const handleUpdateTreeSettings = (data: TreeSettings) => {
 		setTreeSettings({ ...data });
 		setDialogOpen(false);
 		if (tree && treeSettings) {

@@ -17,7 +17,7 @@ import {
 import FormGroup from '@mui/material/FormGroup';
 
 import { TreeNode } from '../tree';
-import { EditNodeFormInputs } from '../types';
+import { TreeNodeAttributes } from '../types';
 
 const schema = yup.object().shape({
 	value: yup.string().required('value is required'),
@@ -31,7 +31,7 @@ function EditNodeForm({
 	onShift,
 }: {
 	selectedNode: TreeNode;
-	onSubmit: (data: EditNodeFormInputs) => void;
+	onSubmit: (data: TreeNodeAttributes) => void;
 	onDelete: (node: TreeNode) => void;
 	onInvert: (node: TreeNode) => void;
 	onShift: (node: TreeNode, direction: 'left' | 'right') => void;
@@ -42,7 +42,7 @@ function EditNodeForm({
 		getValues,
 		setValue,
 		formState: { errors },
-	} = useForm<EditNodeFormInputs>({
+	} = useForm<TreeNodeAttributes>({
 		resolver: yupResolver(schema),
 	});
 
@@ -51,9 +51,18 @@ function EditNodeForm({
 			setValue('value', selectedNode.attributes.value);
 			setValue('backgroundColor', selectedNode.attributes.backgroundColor);
 			setValue('textColor', selectedNode.attributes.textColor);
-			setValue('lineColor', selectedNode.attributes.lineAttributes.lineColor);
-			setValue('dashedLine', selectedNode.attributes.lineAttributes.dashed);
-			setValue('arrowedLine', selectedNode.attributes.lineAttributes.showArrow);
+			setValue(
+				'lineAttributes.lineColor',
+				selectedNode.attributes.lineAttributes.lineColor
+			);
+			setValue(
+				'lineAttributes.dashedLine',
+				selectedNode.attributes.lineAttributes.dashedLine
+			);
+			setValue(
+				'lineAttributes.showArrow',
+				selectedNode.attributes.lineAttributes.showArrow
+			);
 			console.log(selectedNode);
 		}
 	}, [selectedNode]);
@@ -117,7 +126,7 @@ function EditNodeForm({
 			<Stack gap={3} marginX={2.5} marginY={2}>
 				<h2>Line Attributes</h2>
 				<Controller
-					name='lineColor'
+					name='lineAttributes.lineColor'
 					control={control}
 					defaultValue='#000000'
 					rules={{ validate: matchIsValidColor }}
@@ -135,24 +144,24 @@ function EditNodeForm({
 				/>
 				<FormGroup row>
 					<Controller
-						name='dashedLine'
+						name='lineAttributes.dashedLine'
 						control={control}
 						defaultValue={false}
 						render={({ field }) => (
 							<FormControlLabel
-								checked={getValues('dashedLine') ?? false}
+								checked={getValues('lineAttributes.dashedLine') ?? false}
 								control={<Checkbox {...field} />}
 								label='Dashed Line'
 							/>
 						)}
 					/>
 					<Controller
-						name='arrowedLine'
+						name='lineAttributes.showArrow'
 						control={control}
 						defaultValue={false}
 						render={({ field }) => (
 							<FormControlLabel
-								checked={getValues('arrowedLine') ?? false}
+								checked={getValues('lineAttributes.showArrow') ?? false}
 								control={<Checkbox {...field} />}
 								label='Display Arrow'
 							/>
