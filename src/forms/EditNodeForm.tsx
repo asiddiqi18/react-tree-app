@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import { AccountCircle } from '@mui/icons-material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {
@@ -11,6 +12,7 @@ import {
 	Checkbox,
 	Divider,
 	FormControlLabel,
+	InputAdornment,
 	Stack,
 	TextField,
 } from '@mui/material';
@@ -21,6 +23,18 @@ import { TreeNodeAttributes } from '../types';
 
 const schema = yup.object().shape({
 	value: yup.string().required('value is required'),
+	nodeHeight: yup
+		.number()
+		.typeError('Must select a valid number for node height')
+		.integer('Node height must be a whole number')
+		.min(1, 'Node height must be at least 1')
+		.required(),
+	nodeWidth: yup
+		.number()
+		.typeError('Must select a valid number for node width')
+		.integer('Node width must be a whole number')
+		.min(1, 'Node width must be at least 1')
+		.required(),
 });
 
 function EditNodeForm({
@@ -51,6 +65,8 @@ function EditNodeForm({
 			setValue('value', selectedNode.attributes.value);
 			setValue('backgroundColor', selectedNode.attributes.backgroundColor);
 			setValue('textColor', selectedNode.attributes.textColor);
+			setValue('nodeWidth', selectedNode.attributes.nodeWidth);
+			setValue('nodeHeight', selectedNode.attributes.nodeHeight);
 			setValue(
 				'lineAttributes.lineColor',
 				selectedNode.attributes.lineAttributes.lineColor
@@ -171,6 +187,44 @@ function EditNodeForm({
 			<Divider />
 			<Stack gap={3} marginX={2.5} marginY={2}>
 				<h2>Position</h2>
+				<div className='flex gap-4 justify-between'>
+					<Controller
+						name='nodeWidth'
+						control={control}
+						defaultValue={96}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								error={fieldState.invalid}
+								helperText={fieldState.invalid ? fieldState.error?.message : ''}
+								id='standard-number'
+								label='Node Width'
+								type='number'
+								InputLabelProps={{
+									shrink: true,
+								}}
+							/>
+						)}
+					/>
+					<Controller
+						name='nodeHeight'
+						control={control}
+						defaultValue={96}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								error={fieldState.invalid}
+								helperText={fieldState.invalid ? fieldState.error?.message : ''}
+								id='standard-number'
+								label='Node Height'
+								type='number'
+								InputLabelProps={{
+									shrink: true,
+								}}
+							/>
+						)}
+					/>
+				</div>
 				<div className='flex gap-1 justify-between'>
 					<Button
 						startIcon={<KeyboardDoubleArrowLeftIcon />}

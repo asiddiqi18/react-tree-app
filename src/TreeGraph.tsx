@@ -8,9 +8,6 @@ import { Tree, TreeNode } from './tree';
 import { TreeSettings } from './types';
 import { useWindowResize } from './useWindowSize';
 
-const NODE_WIDTH = 96;
-const NODE_HEIGHT = 96;
-
 function TreeGraph({
 	tree,
 	treeSettings,
@@ -32,12 +29,14 @@ function TreeGraph({
 			onAddNode(node);
 		};
 
+		console.log(node.attributes);
+
 		return (
 			<div
 				className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
-					width: NODE_WIDTH,
-					height: NODE_HEIGHT,
+					width: node.attributes.nodeWidth,
+					height: node.attributes.nodeHeight,
 					borderRadius: '50%',
 					backgroundColor: node.attributes.backgroundColor,
 					color: node.attributes.textColor,
