@@ -98,7 +98,6 @@ function App() {
 	const updateTree = (newTree: Tree) => {
 		if (newTree && treeSettings) {
 			setTree(newTree);
-			console.log('Saved new tree.', newTree);
 			const myData: LocalData = { tree: newTree, treeSettings };
 			_.debounce(() => {
 				saveDataToLocal(myData);
@@ -110,7 +109,6 @@ function App() {
 		if (selectedNode && tree) {
 			const updatedTree: Tree = cloneTree(tree); // clone tree
 			updatedTree.updateNode(selectedNode, data);
-			console.log('Updating selected node.', data);
 			updateTree(updatedTree);
 		}
 	};

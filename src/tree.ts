@@ -3,12 +3,17 @@ import _ from 'lodash';
 import RandomWords from './resources/random_words.json';
 import { TreeNodeAttributes } from './types';
 
-export const defaultBackgroundColor = '#a5d6a7';
-export const defaultBackgroundText = '#000000';
-export const defaultLineAttributes = {
-	showArrow: false,
-	dashedLine: false,
-	lineColor: '#000000',
+export const defaultNodeAttributes: TreeNodeAttributes = {
+	value: 'new',
+	nodeHeight: 96,
+	nodeWidth: 96,
+	backgroundColor: '#a5d6a7',
+	textColor: '#000000',
+	lineAttributes: {
+		showArrow: false,
+		dashedLine: false,
+		lineColor: '#000000',
+	},
 };
 
 export class TreeNode {
@@ -40,10 +45,8 @@ export class Tree {
 
 	addNode(parent: TreeNode, value: string): TreeNode {
 		const node = new TreeNode(++this.nextId, {
-			value: value,
-			backgroundColor: defaultBackgroundColor,
-			textColor: defaultBackgroundText,
-			lineAttributes: defaultLineAttributes,
+			...defaultNodeAttributes,
+			value,
 		});
 		parent.children.push(node);
 		this.nodes.set(this.nextId, node);
@@ -125,6 +128,8 @@ export class Tree {
 				backgroundColor: treeMeta.backgroundColor,
 				textColor: treeMeta.textColor,
 				value: treeMeta.value,
+				nodeHeight: treeMeta.nodeHeight,
+				nodeWidth: treeMeta.nodeWidth,
 				lineAttributes: {
 					dashedLine: treeMeta.lineAttributes.dashedLine,
 					showArrow: treeMeta.lineAttributes.showArrow,
@@ -157,17 +162,7 @@ export class Tree {
 	}
 
 	static async generateRandomTree(N: number): Promise<Tree> {
-		const treeMeta: TreeNodeAttributes = {
-			value: 'root',
-			backgroundColor: '#a5d6a7',
-			textColor: '#000000',
-			lineAttributes: {
-				showArrow: false,
-				dashedLine: false,
-				lineColor: '#000000',
-			},
-		};
-
+		const treeMeta = defaultNodeAttributes;
 		const tree = new Tree(treeMeta);
 
 		const max_children = 3;
@@ -231,23 +226,13 @@ export class Tree {
 		const root = nodesMap.get(0);
 
 		if (root) {
-			const tree = new Tree({
-				value: root.attributes.value,
-				backgroundColor: defaultBackgroundColor,
-				textColor: defaultBackgroundText,
-				lineAttributes: defaultLineAttributes,
-			});
+			const tree = new Tree(defaultNodeAttributes);
 			tree.root = root;
 			tree.nodes = nodesMap;
 			tree.nextId = data.nodes.length - 1;
 			return tree;
 		}
 
-		return new Tree({
-			value: 'hi',
-			backgroundColor: defaultBackgroundColor,
-			textColor: defaultBackgroundText,
-			lineAttributes: defaultLineAttributes,
-		});
+		return new Tree(defaultNodeAttributes);
 	}
 }

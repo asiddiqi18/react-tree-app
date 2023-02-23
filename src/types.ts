@@ -15,6 +15,8 @@ export type TreeNodeAttributes = {
 	value: string;
 	backgroundColor: string;
 	textColor: string;
+	nodeHeight: number;
+	nodeWidth: number;
 	lineAttributes: LineAttributes;
 };
 
