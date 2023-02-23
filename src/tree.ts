@@ -121,10 +121,16 @@ export class Tree {
 	updateNode(node: TreeNode, treeMeta: TreeNodeAttributes): void {
 		const foundNode = this.findNodeById(node);
 		if (foundNode) {
-			foundNode.attributes.value = treeMeta.value;
-			foundNode.attributes.backgroundColor = treeMeta.backgroundColor;
-			foundNode.attributes.textColor = treeMeta.textColor;
-			foundNode.attributes.lineAttributes = treeMeta.lineAttributes;
+			foundNode.attributes = {
+				backgroundColor: treeMeta.backgroundColor,
+				textColor: treeMeta.textColor,
+				value: treeMeta.value,
+				lineAttributes: {
+					dashedLine: treeMeta.lineAttributes.dashedLine,
+					showArrow: treeMeta.lineAttributes.showArrow,
+					lineColor: treeMeta.lineAttributes.lineColor,
+				},
+			};
 		}
 	}
 

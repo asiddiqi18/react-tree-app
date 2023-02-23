@@ -63,7 +63,6 @@ function EditNodeForm({
 				'lineAttributes.showArrow',
 				selectedNode.attributes.lineAttributes.showArrow
 			);
-			console.log(selectedNode);
 		}
 	}, [selectedNode]);
 
