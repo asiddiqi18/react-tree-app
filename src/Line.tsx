@@ -61,21 +61,40 @@ const LineTo: React.FC<Props> = ({
 		zIndex: -7,
 	};
 
-	const radius = 48;
+	const majorAxis = fromRect.width;
+	const minorAxis = fromRect.height;
 	const arrowLength = 20;
 
 	const dx = x2 - x1;
 	const dy = y2 - y1;
-	const cutOffLength = showArrow ? radius + arrowLength : radius;
 
+	// Calculate the angle between the x-axis and the major axis
+	const angle = Math.atan2(dy, dx);
+
+	// Calculate the distances from the center to the edge along the major and minor axes
+	const a_from = majorAxis / 2;
+	const b_from = minorAxis / 2;
+
+	const a_to = toRect.width / 2;
+	const b_to = toRect.height / 2;
+
+	const [sin, cos] = [Math.sin(angle), Math.cos(angle)];
+
+	const radius = Math.sqrt(
+		(a_to * a_to * b_to * b_to) /
+			(b_to * b_to * cos * cos + a_to * a_to * sin * sin)
+	);
+
+	const cutOffLength = radius + (showArrow ? arrowLength : 0);
+
+	// Calculate the normalized vector from the center to the end point
 	const len = Math.sqrt(dx * dx + dy * dy);
-
-	// normalized
 	const nx = dx / len;
 	const ny = dy / len;
 
-	const x_start = x1 + nx * radius;
-	let y_start = y1 + ny * radius;
+	// Calculate the starting and ending points of the arrow
+	const x_start = x1 + a_from * cos;
+	let y_start = y1 + b_from * sin;
 
 	const x_end = x2 - nx * cutOffLength;
 	let y_end = y2 - ny * cutOffLength;

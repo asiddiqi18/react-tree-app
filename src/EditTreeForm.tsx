@@ -17,11 +17,18 @@ export type EditTreeFormInputs = {
 	backgroundColor: string;
 	nodeResize: boolean;
 	levelHeight: number;
+	siblingSpace: number;
 };
 
 const schema = yup.object().shape({
 	backgroundColor: yup.string().required('value is required'),
 	levelHeight: yup
+		.number()
+		.typeError('Must select a valid number for level height')
+		.integer('Level height must be a whole number')
+		.min(1, 'Level height must be at least 1')
+		.required(),
+	siblingSpace: yup
 		.number()
 		.typeError('Must select a valid number for level height')
 		.integer('Level height must be a whole number')
@@ -51,6 +58,7 @@ function EditTreeForm({
 			setValue('backgroundColor', treeSettings.backgroundColor);
 			setValue('nodeResize', treeSettings.nodeResize);
 			setValue('levelHeight', treeSettings.levelHeight);
+			setValue('siblingSpace', treeSettings.siblingSpace);
 		}
 	}, [treeSettings]);
 
@@ -85,6 +93,24 @@ function EditTreeForm({
 							helperText={fieldState.invalid ? fieldState.error?.message : ''}
 							id='standard-number'
 							label='Level height'
+							type='number'
+							InputLabelProps={{
+								shrink: true,
+							}}
+						/>
+					)}
+				/>
+				<Controller
+					name='siblingSpace'
+					control={control}
+					defaultValue={5}
+					render={({ field, fieldState }) => (
+						<TextField
+							{...field}
+							error={fieldState.invalid}
+							helperText={fieldState.invalid ? fieldState.error?.message : ''}
+							id='standard-number'
+							label='Node horizontal margin'
 							type='number'
 							InputLabelProps={{
 								shrink: true,

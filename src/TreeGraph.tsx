@@ -35,17 +35,15 @@ function TreeGraph({
 		const bubble = () => {
 			return (
 				<div
-					className='hover:brightness-95 hover:shadow-xl mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer z-10'
+					className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+					// <div class="w-48 h-24 rounded-full rounded-t-24 rounded-b-24 bg-gray-500"></div>
 					style={{
-						width: NODE_WIDTH,
+						minWidth: NODE_WIDTH,
+						width: treeSettings.nodeResize ? undefined : NODE_WIDTH,
 						height: NODE_HEIGHT,
+						borderRadius: '50%',
 						backgroundColor: node.attributes.backgroundColor,
 						color: node.attributes.textColor,
-						marginTop: treeSettings.levelHeight / 2,
-						marginBottom: treeSettings.levelHeight / 2,
-						// borderStyle: 'inset',
-						// borderWidth: 4,
-						// borderColor: 'red',
 					}}
 					onClick={() => onNodeClick(node)}
 					onMouseEnter={() => setHover(true)}
@@ -137,7 +135,16 @@ function TreeGraph({
 
 		return (
 			<div id={node.attributes.value} className='flex flex-col items-center'>
-				<div ref={nodeRef} id={`${node.attributes.value}-node`}>
+				<div
+					ref={nodeRef}
+					id={`${node.attributes.value}-node`}
+					style={{
+						marginTop: treeSettings.levelHeight / 2,
+						marginBottom: treeSettings.levelHeight / 2,
+						marginLeft: treeSettings.siblingSpace / 2,
+						marginRight: treeSettings.siblingSpace / 2,
+					}}
+				>
 					<Node node={node} />
 				</div>
 				<Line

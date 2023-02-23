@@ -204,8 +204,9 @@ export class Tree {
 	}
 
 	// Deserialize a JSON string to a Tree instance
-	static deserialize(jsonString: string): Tree {
-		const data = JSON.parse(jsonString);
+	static deserialize(tree: any): Tree {
+		console.log('Deserializing');
+		const data = tree;
 		const nodesMap = new Map<number, TreeNode>();
 
 		data.nodes.forEach((serializedNode: { id: any; attributes: any }) => {

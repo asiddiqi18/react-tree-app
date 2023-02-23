@@ -32,6 +32,7 @@ import TreeGraph from './TreeGraph';
 
 interface MyData {
 	tree: Tree;
+	treeSettings: EditTreeFormInputs;
 }
 
 function createTreeObj() {
@@ -125,7 +126,7 @@ function createTreeObj() {
 		],
 	};
 
-	return Tree.deserialize(JSON.stringify(data));
+	return Tree.deserialize(data);
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -160,34 +161,63 @@ function App() {
 	}, [imageRef]);
 
 	const saveDataToLocal = (data: MyData) => {
-		if (tree) {
-			localStorage.setItem('myData', data.tree.serialize());
+		console.log('Trying to save', tree, treeSettings);
+		if (tree && treeSettings) {
+			const saved = `{"tree": ${data.tree.serialize()}, "treeSettings": ${JSON.stringify(
+				data.treeSettings
+			)}}`;
+			console.log(saved);
+			localStorage.setItem('myData', saved);
 		}
 	};
 
 	const getDataFromLocal = (): MyData | null => {
 		const data = localStorage.getItem('myData');
 		if (data) {
-			return { tree: Tree.deserialize(data) };
+			console.log('getting data from local...');
+
+			const parsed = JSON.parse(data);
+			let treeSettingsParsed;
+			if (parsed.treeSettings) {
+				treeSettingsParsed = parsed.treeSettings;
+			}
+			return {
+				tree: Tree.deserialize(parsed.tree),
+				treeSettings: treeSettingsParsed,
+			};
+		} else {
+			console.log('failed to get data from local');
 		}
 		return null;
 	};
 
 	useEffect(() => {
 		const treeObj = getDataFromLocal();
-		if (treeObj) {
+		console.log(treeObj);
+		if (treeObj?.tree) {
 			const tree1: Tree = treeObj.tree;
 			const importedTree = cloneTree(tree1);
 			setTree(importedTree);
+			console.log('imported tree');
 		} else {
+			console.log('Drawing from default tree', tree);
 			setTree(createTreeObj());
 		}
-		setTreeSettings({
-			backgroundColor: '#ffffff',
-			levelHeight: 48,
-			nodeResize: false,
-		});
+		if (treeObj?.treeSettings) {
+			setTreeSettings(treeObj?.treeSettings);
+			console.log('imported settings', treeObj?.treeSettings);
+		} else {
+			console.log('Drawing from default settings');
+			setTreeSettings({
+				backgroundColor: '#ffffff',
+				levelHeight: 48,
+				siblingSpace: 5,
+				nodeResize: false,
+			});
+		}
 	}, []);
+
+	console.log(tree, treeSettings);
 
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
@@ -206,9 +236,9 @@ function App() {
 	);
 
 	const updateTree = (newTree: Tree) => {
-		if (newTree) {
+		if (newTree && treeSettings) {
 			setTree(newTree);
-			const myData: MyData = { tree: newTree };
+			const myData: MyData = { tree: newTree, treeSettings };
 			_.debounce(() => {
 				saveDataToLocal(myData);
 			}, 500)();
@@ -233,9 +263,12 @@ function App() {
 	};
 
 	const handleUpdateTreeSettings = (data: EditTreeFormInputs) => {
-		console.log(data);
+		console.log('REQUESTED', data);
 		setTreeSettings({ ...data });
 		setDialogOpen(false);
+		if (tree && treeSettings) {
+			saveDataToLocal({ tree, treeSettings: data });
+		}
 	};
 
 	const handleAddNode = useCallback(
