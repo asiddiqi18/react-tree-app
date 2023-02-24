@@ -11,7 +11,7 @@
 				"nodeWidth": 96,
 				"lineAttributes": {
 					"showArrow": false,
-					"dashed": false,
+					"dashedLine": false,
 					"lineColor": "#000000"
 				}
 			},

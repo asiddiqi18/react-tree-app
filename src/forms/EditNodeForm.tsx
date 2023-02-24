@@ -4,7 +4,6 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AccountCircle } from '@mui/icons-material';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {
@@ -12,7 +11,6 @@ import {
 	Checkbox,
 	Divider,
 	FormControlLabel,
-	InputAdornment,
 	Stack,
 	TextField,
 } from '@mui/material';

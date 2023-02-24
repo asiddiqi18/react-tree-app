@@ -16,6 +16,17 @@ export const defaultNodeAttributes: TreeNodeAttributes = {
 	},
 };
 
+export type TreeSerialized = {
+	rootId: number;
+	nodes: TreeNodeSerialized[];
+};
+
+export type TreeNodeSerialized = {
+	id: number;
+	attributes: TreeNodeAttributes;
+	childrenIds: number[];
+};
+
 export class TreeNode {
 	id: number;
 	attributes: TreeNodeAttributes;
@@ -194,7 +205,7 @@ export class Tree {
 	}
 
 	serialize(): string {
-		const serializedNodes: any[] = [];
+		const serializedNodes: TreeNodeSerialized[] = [];
 		this.nodes.forEach((node) => {
 			if (node) {
 				const { id, attributes, children } = node;
@@ -205,34 +216,36 @@ export class Tree {
 				});
 			}
 		});
-		return JSON.stringify({ rootId: this.root.id, nodes: serializedNodes });
+		const serializedTree: TreeSerialized = {
+			rootId: this.root.id,
+			nodes: serializedNodes,
+		};
+		return JSON.stringify(serializedTree);
 	}
 
 	// Deserialize a JSON string to a Tree instance
-	static deserialize(tree: any): Tree {
+	static deserialize(tree: TreeSerialized): Tree {
 		const data = tree;
 		const nodesMap = new Map<number, TreeNode>();
 
-		data.nodes.forEach((serializedNode: { id: any; attributes: any }) => {
+		data.nodes.forEach((serializedNode: TreeNodeSerialized) => {
 			const { id, attributes } = serializedNode;
 			const node = new TreeNode(id, attributes);
 
 			nodesMap.set(id, node);
 		});
 
-		data.nodes.forEach(
-			(serializedNode: { id: any; attributes: any; childrenIds: any }) => {
-				const { id, attributes, childrenIds } = serializedNode;
-				const children = childrenIds.map((id: number) => nodesMap.get(id)!);
+		data.nodes.forEach((serializedNode: TreeNodeSerialized) => {
+			const { id, attributes, childrenIds } = serializedNode;
+			const children = childrenIds.map((id: number) => nodesMap.get(id)!);
 
-				const node = nodesMap.get(id);
-				if (node) {
-					node.attributes = attributes;
-					node.children = children;
-					nodesMap.set(id, node);
-				}
+			const node = nodesMap.get(id);
+			if (node) {
+				node.attributes = attributes;
+				node.children = children;
+				nodesMap.set(id, node);
 			}
-		);
+		});
 
 		const root = nodesMap.get(0);
 

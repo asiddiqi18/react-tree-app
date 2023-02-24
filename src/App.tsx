@@ -17,7 +17,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 import EditNodeForm from './forms/EditNodeForm';
 import EditTreeForm from './forms/EditTreeForm';
-import { getDataFromLocal, saveDataToLocal } from './localSotrage';
+import { getDataFromLocal, saveDataToLocal } from './localStorage';
 import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
