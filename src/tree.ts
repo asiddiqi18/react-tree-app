@@ -10,7 +10,7 @@ export const defaultNodeAttributes: TreeNodeAttributes = {
 	backgroundColor: '#a5d6a7',
 	textColor: '#000000',
 	lineAttributes: {
-		showArrow: false,
+		arrowType: 'none',
 		dashedLine: false,
 		lineColor: '#000000',
 	},
@@ -157,7 +157,7 @@ export class Tree {
 				nodeWidth: treeMeta.nodeWidth,
 				lineAttributes: {
 					dashedLine: treeMeta.lineAttributes.dashedLine,
-					showArrow: treeMeta.lineAttributes.showArrow,
+					arrowType: treeMeta.lineAttributes.arrowType,
 					lineColor: treeMeta.lineAttributes.lineColor,
 				},
 			};

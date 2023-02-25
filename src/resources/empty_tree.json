@@ -10,7 +10,7 @@
 				"nodeHeight": 96,
 				"nodeWidth": 96,
 				"lineAttributes": {
-					"showArrow": false,
+					"arrowType": "none",
 					"dashedLine": false,
 					"lineColor": "#000000"
 				}

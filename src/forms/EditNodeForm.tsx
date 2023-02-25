@@ -4,13 +4,21 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
 	Button,
 	Checkbox,
 	Divider,
+	FormControl,
 	FormControlLabel,
+	InputLabel,
+	MenuItem,
+	Select,
 	Stack,
 	TextField,
 } from '@mui/material';
@@ -74,12 +82,11 @@ function EditNodeForm({
 				selectedNode.attributes.lineAttributes.dashedLine
 			);
 			setValue(
-				'lineAttributes.showArrow',
-				selectedNode.attributes.lineAttributes.showArrow
+				'lineAttributes.arrowType',
+				selectedNode.attributes.lineAttributes.arrowType
 			);
 		}
 	}, [selectedNode]);
-
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
 			<Stack spacing={3} marginX={2.5} mb={4}>
@@ -157,7 +164,7 @@ function EditNodeForm({
 						/>
 					)}
 				/>
-				<FormGroup row>
+				<FormGroup className='w-full flex justify-between' row>
 					<Controller
 						name='lineAttributes.dashedLine'
 						control={control}
@@ -171,15 +178,32 @@ function EditNodeForm({
 						)}
 					/>
 					<Controller
-						name='lineAttributes.showArrow'
+						name='lineAttributes.arrowType'
 						control={control}
-						defaultValue={false}
+						defaultValue={'none'}
 						render={({ field }) => (
-							<FormControlLabel
-								checked={getValues('lineAttributes.showArrow') ?? false}
-								control={<Checkbox {...field} />}
-								label='Display Arrow'
-							/>
+							<FormControl className='w-1/2'>
+								<InputLabel id='demo-simple-select-label'>Age</InputLabel>
+								<Select
+									{...field}
+									labelId='demo-simple-select-label'
+									id='demo-simple-select'
+									label='Age'
+								>
+									<MenuItem value={'none'}>None</MenuItem>
+									<MenuItem value={'to'}>
+										<ArrowRightAltIcon className='mr-3' />
+										To
+									</MenuItem>
+									<MenuItem value={'from'}>
+										<ArrowRightAltIcon className='rotate-180 mr-3' />
+										From
+									</MenuItem>
+									<MenuItem value={'both'}>
+										<SyncAltIcon className='mr-3' /> Both
+									</MenuItem>
+								</Select>
+							</FormControl>
 						)}
 					/>
 				</FormGroup>

@@ -21,7 +21,7 @@ export type TreeNodeAttributes = {
 };
 
 export type LineAttributes = {
-	showArrow: boolean;
+	arrowType: string;
 	dashedLine: boolean;
 	lineColor: string;
 };

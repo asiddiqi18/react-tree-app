@@ -3,7 +3,7 @@ import React, { CSSProperties } from 'react';
 type LineProps = {
 	fromRect: DOMRect | null;
 	toRect: DOMRect | null;
-	showArrow?: boolean;
+	arrowType?: string;
 	dashedLine?: boolean;
 	lineColor?: string;
 };
@@ -11,7 +11,7 @@ type LineProps = {
 const LineTo: React.FC<LineProps> = ({
 	fromRect,
 	toRect,
-	showArrow = false,
+	arrowType,
 	dashedLine: dashed = false,
 	lineColor = 'black',
 }) => {
@@ -45,7 +45,6 @@ const LineTo: React.FC<LineProps> = ({
 		width: width,
 		height: height,
 		pointerEvents: 'none',
-		// zIndex: -1,
 	};
 	const primaryLineStyle: CSSProperties = {
 		position: 'relative',
@@ -53,7 +52,6 @@ const LineTo: React.FC<LineProps> = ({
 		stroke: lineColor,
 		strokeWidth: '2px',
 		strokeDasharray: dashed ? '4' : undefined,
-		zIndex: -10,
 	};
 
 	const arrowHeadStyle: CSSProperties = {
@@ -85,7 +83,11 @@ const LineTo: React.FC<LineProps> = ({
 			(b_to * b_to * cos * cos + a_to * a_to * sin * sin)
 	);
 
-	const cutOffLength = radius + (showArrow ? arrowLength : 0);
+	const cutOffLengthStart =
+		radius + (arrowType === 'to' || arrowType === 'both' ? arrowLength : 0);
+
+	const cutOffLengthEnd =
+		radius + (arrowType === 'from' || arrowType === 'both' ? arrowLength : 0);
 
 	// Calculate the normalized vector from the center to the end point
 	const len = Math.sqrt(dx * dx + dy * dy);
@@ -93,15 +95,15 @@ const LineTo: React.FC<LineProps> = ({
 	const ny = dy / len;
 
 	// Calculate the starting and ending points of the arrow
-	const x_start = x1 + a_from * cos;
-	let y_start = y1 + b_from * sin;
+	const x_start = x1 + nx * cutOffLengthStart;
+	let y_start = y1 + ny * cutOffLengthStart;
 
-	const x_end = x2 - nx * cutOffLength;
-	let y_end = y2 - ny * cutOffLength;
+	const x_end = x2 - nx * cutOffLengthEnd;
+	let y_end = y2 - ny * cutOffLengthEnd;
 
 	if (dx === 0) {
 		const sign = Math.sign(dy);
-		const yOffset = sign * cutOffLength;
+		const yOffset = sign * cutOffLengthEnd;
 		y_start = y1 + sign * radius;
 		y_end = y2 - yOffset;
 	}
@@ -113,9 +115,16 @@ const LineTo: React.FC<LineProps> = ({
 					id='primary-line'
 					d={`M ${x_start} ${y_start} L ${x_end} ${y_end}`}
 					style={primaryLineStyle}
-					markerEnd={showArrow ? 'url(#arrowhead)' : ''}
+					markerStart={
+						arrowType === 'to' || arrowType === 'both' ? 'url(#arrowhead)' : ''
+					}
+					markerEnd={
+						arrowType === 'from' || arrowType === 'both'
+							? 'url(#arrowhead)'
+							: ''
+					}
 				/>
-				{showArrow && (
+				{arrowType !== 'none' && (
 					<defs>
 						<marker
 							id='arrowhead'
@@ -124,7 +133,7 @@ const LineTo: React.FC<LineProps> = ({
 							markerHeight='7'
 							refX='0'
 							refY='3.5'
-							orient='auto'
+							orient='auto-start-reverse'
 						>
 							<polygon points='0 0, 10 3.5, 0 7' />
 						</marker>
