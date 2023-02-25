@@ -171,7 +171,7 @@ export class Tree {
 		}
 	}
 
-	static async generateRandomTree(N: number): Promise<Tree> {
+	static generateRandomTree(N: number): Tree {
 		const treeMeta = defaultNodeAttributes;
 		const tree = new Tree(treeMeta);
 
@@ -183,7 +183,7 @@ export class Tree {
 		while (currentNumberOfNodes < N - 1 && queue.length > 0) {
 			const node = queue.shift()!;
 			const numberOfChildren = Math.min(
-				N - currentNumberOfNodes,
+				N - 1 - currentNumberOfNodes,
 				1 + Math.floor(Math.random() * max_children)
 			);
 			const newChildren: TreeNode[] = [];

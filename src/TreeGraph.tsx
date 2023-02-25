@@ -29,8 +29,6 @@ function TreeGraph({
 			onAddNode(node);
 		};
 
-		console.log(node.attributes);
-
 		return (
 			<div
 				className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
@@ -129,6 +127,7 @@ function TreeGraph({
 				<div
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
+					className='z-20'
 					style={{
 						marginTop: treeSettings.levelHeight / 2,
 						marginBottom: treeSettings.levelHeight / 2,

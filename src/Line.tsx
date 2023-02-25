@@ -32,7 +32,7 @@ const LineTo: React.FC<LineProps> = ({
 
 	const style: CSSProperties = {
 		position: 'absolute',
-		left: left,
+		left: left + window.pageXOffset,
 		top: top + window.pageYOffset,
 		width: width,
 		height: height,

@@ -4,14 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-	Button,
-	Checkbox,
-	FormControlLabel,
-	FormGroup,
-	Stack,
-	TextField,
-} from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
 
 import { TreeSettings } from '../types';
 

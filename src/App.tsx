@@ -17,11 +17,18 @@ import Tooltip from '@mui/material/Tooltip';
 
 import EditNodeForm from './forms/EditNodeForm';
 import EditTreeForm from './forms/EditTreeForm';
+import EditRandomTreeForm from './forms/GenerateRandomTree';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
+import DefaultTreeSettings from './resources/default_tree_settings.json';
 import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
-import { LocalData, TreeNodeAttributes, TreeSettings } from './types';
+import {
+	GenerateRandomTreeSettings,
+	LocalData,
+	TreeNodeAttributes,
+	TreeSettings,
+} from './types';
 
 function createTreeObj() {
 	return Tree.deserialize(EmptyTree);
@@ -37,8 +44,13 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-	const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
+		useState<boolean>(false);
+	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
+		useState<boolean>(false);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
+	const [randomTreeSettings, setRandomTreeSettings] =
+		useState<GenerateRandomTreeSettings>({ numberOfNodes: 16 });
 	const imageRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -54,11 +66,7 @@ function App() {
 		if (treeObj?.treeSettings) {
 			setTreeSettings(treeObj?.treeSettings);
 		} else {
-			setTreeSettings({
-				backgroundColor: '#ffffff',
-				levelHeight: 48,
-				siblingSpace: 5,
-			});
+			setTreeSettings(DefaultTreeSettings);
 		}
 	}, []);
 
@@ -115,11 +123,19 @@ function App() {
 
 	const handleUpdateTreeSettings = (data: TreeSettings) => {
 		setTreeSettings({ ...data });
-		setDialogOpen(false);
+		setTreeSettingsDialogOpen(false);
 		if (!tree) {
 			return;
 		}
 		saveDataToLocal({ tree, treeSettings: data });
+	};
+
+	const handleUpdateRandomTreeSettings = (data: GenerateRandomTreeSettings) => {
+		setRandomTreeSettings({ ...data });
+		setRandomTreeSettingsDialogOpen(false);
+
+		const treeObj = Tree.generateRandomTree(data.numberOfNodes);
+		updateTree(treeObj);
 	};
 
 	const handleAddNode = useCallback(
@@ -168,10 +184,6 @@ function App() {
 			updatedTree.shiftRight(node);
 		}
 		updateTree(updatedTree);
-	};
-
-	const generateRandomTreeFunc = async () => {
-		return await Tree.generateRandomTree(16);
 	};
 
 	if (!tree || !treeSettings) {
@@ -234,12 +246,12 @@ function App() {
 				</div>
 			)}
 
-			<Dialog open={dialogOpen}>
+			<Dialog open={treeSettingsDialogOpen}>
 				<DialogTitle>
 					Edit Tree Settings{' '}
 					<IconButton
 						aria-label='close'
-						onClick={() => setDialogOpen(false)}
+						onClick={() => setTreeSettingsDialogOpen(false)}
 						sx={{
 							position: 'absolute',
 							right: 8,
@@ -257,7 +269,46 @@ function App() {
 				</DialogContent>
 			</Dialog>
 
-			<div style={{ position: 'fixed', bottom: '16px', left: '16px' }}>
+			<Dialog
+				open={randomTreeSettingsDialogOpen}
+				onClose={(event, reason) => {
+					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+						setRandomTreeSettingsDialogOpen(false);
+					}
+				}}
+			>
+				<DialogTitle>
+					Generate Random Tree{' '}
+					<IconButton
+						aria-label='close'
+						onClick={() => setRandomTreeSettingsDialogOpen(false)}
+						sx={{
+							position: 'absolute',
+							right: 8,
+							top: 8,
+						}}
+					>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
+				<DialogContent>
+					{randomTreeSettings && (
+						<EditRandomTreeForm
+							randomTreeSettings={randomTreeSettings}
+							onSubmit={handleUpdateRandomTreeSettings}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
+
+			<div
+				style={{
+					position: 'fixed',
+					bottom: '16px',
+					left: '16px',
+					zIndex: '20',
+				}}
+			>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
 						<Fab
@@ -275,10 +326,7 @@ function App() {
 					<Tooltip title='Randomize'>
 						<Fab
 							color='info'
-							onClick={async () => {
-								const treeObj = await generateRandomTreeFunc();
-								updateTree(treeObj);
-							}}
+							onClick={() => setRandomTreeSettingsDialogOpen(true)}
 						>
 							<ShuffleIcon />
 						</Fab>
@@ -289,7 +337,10 @@ function App() {
 						</Fab>
 					</Tooltip>
 					<Tooltip title='Settings'>
-						<Fab color='secondary' onClick={() => setDialogOpen(true)}>
+						<Fab
+							color='secondary'
+							onClick={() => setTreeSettingsDialogOpen(true)}
+						>
 							<SettingsIcon />
 						</Fab>
 					</Tooltip>

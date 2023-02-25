@@ -25,3 +25,7 @@ export type LineAttributes = {
 	dashedLine: boolean;
 	lineColor: string;
 };
+
+export type GenerateRandomTreeSettings = {
+	numberOfNodes: number;
+};
