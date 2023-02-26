@@ -183,12 +183,14 @@ function EditNodeForm({
 						defaultValue={'none'}
 						render={({ field }) => (
 							<FormControl className='w-1/2'>
-								<InputLabel id='demo-simple-select-label'>Age</InputLabel>
+								<InputLabel id='demo-simple-select-label'>
+									Arrow Type
+								</InputLabel>
 								<Select
 									{...field}
 									labelId='demo-simple-select-label'
 									id='demo-simple-select'
-									label='Age'
+									label='Arrow Type'
 								>
 									<MenuItem value={'none'}>None</MenuItem>
 									<MenuItem value={'to'}>
