@@ -31,7 +31,7 @@ function TreeGraph({
 
 		return (
 			<div
-				className='hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+				className=' hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
 					width: node.attributes.nodeWidth,
 					height: node.attributes.nodeHeight,
@@ -127,7 +127,6 @@ function TreeGraph({
 				<div
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
-					className='z-20'
 					style={{
 						marginTop: treeSettings.levelHeight / 2,
 						marginBottom: treeSettings.levelHeight / 2,
@@ -137,12 +136,14 @@ function TreeGraph({
 				>
 					<Node node={node} />
 				</div>
-				<Line
-					key={node.id}
-					fromRect={fromRect}
-					toRect={toRect}
-					{...node.attributes.lineAttributes}
-				/>
+				<div>
+					<Line
+						key={node.id}
+						fromRect={fromRect}
+						toRect={toRect}
+						{...node.attributes.lineAttributes}
+					/>
+				</div>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
 			</div>
 		);

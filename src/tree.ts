@@ -1,7 +1,11 @@
 import _ from 'lodash';
 
 import RandomWords from './resources/random_words.json';
-import { TreeNodeAttributes } from './types';
+import {
+	TreeNodeAttributes,
+	TreeNodeSerialized,
+	TreeSerialized,
+} from './types';
 
 export const defaultNodeAttributes: TreeNodeAttributes = {
 	value: 'new',
@@ -14,17 +18,6 @@ export const defaultNodeAttributes: TreeNodeAttributes = {
 		dashedLine: false,
 		lineColor: '#000000',
 	},
-};
-
-export type TreeSerialized = {
-	rootId: number;
-	nodes: TreeNodeSerialized[];
-};
-
-export type TreeNodeSerialized = {
-	id: number;
-	attributes: TreeNodeAttributes;
-	childrenIds: number[];
 };
 
 export class TreeNode {

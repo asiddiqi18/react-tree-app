@@ -70,24 +70,31 @@ const LineTo: React.FC<LineProps> = ({
 	const angle = Math.atan2(dy, dx);
 
 	// Calculate the distances from the center to the edge along the major and minor axes
-	const a_from = majorAxis / 2;
-	const b_from = minorAxis / 2;
+	const a_from = fromRect.width / 2;
+	const b_from = fromRect.height / 2;
 
 	const a_to = toRect.width / 2;
 	const b_to = toRect.height / 2;
 
 	const [sin, cos] = [Math.sin(angle), Math.cos(angle)];
 
-	const radius = Math.sqrt(
+	const radius_from = Math.sqrt(
+		(a_from * a_from * b_from * b_from) /
+			(b_from * b_from * cos * cos + a_from * a_from * sin * sin)
+	);
+
+	const radius_to = Math.sqrt(
 		(a_to * a_to * b_to * b_to) /
 			(b_to * b_to * cos * cos + a_to * a_to * sin * sin)
 	);
 
 	const cutOffLengthStart =
-		radius + (arrowType === 'to' || arrowType === 'both' ? arrowLength : 0);
+		radius_from +
+		(arrowType === 'to' || arrowType === 'both' ? arrowLength : 0);
 
 	const cutOffLengthEnd =
-		radius + (arrowType === 'from' || arrowType === 'both' ? arrowLength : 0);
+		radius_to +
+		(arrowType === 'from' || arrowType === 'both' ? arrowLength : 0);
 
 	// Calculate the normalized vector from the center to the end point
 	const len = Math.sqrt(dx * dx + dy * dy);
@@ -104,7 +111,7 @@ const LineTo: React.FC<LineProps> = ({
 	if (dx === 0) {
 		const sign = Math.sign(dy);
 		const yOffset = sign * cutOffLengthEnd;
-		y_start = y1 + sign * radius;
+		y_start = y1 + sign * radius_from;
 		y_end = y2 - yOffset;
 	}
 
