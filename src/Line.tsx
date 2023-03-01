@@ -1,6 +1,7 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 
 type LineProps = {
+	id: number;
 	fromRect: DOMRect | null;
 	toRect: DOMRect | null;
 	arrowType?: string;
@@ -9,6 +10,7 @@ type LineProps = {
 };
 
 const LineTo: React.FC<LineProps> = ({
+	id,
 	fromRect,
 	toRect,
 	arrowType,
@@ -30,37 +32,6 @@ const LineTo: React.FC<LineProps> = ({
 	const x2 = toRect.left + toRect.width / 2 - left;
 	const y2 = toRect.top + toRect.height / 2 - top;
 
-	const style: CSSProperties = {
-		position: 'absolute',
-		left: left + window.pageXOffset,
-		top: top + window.pageYOffset,
-		width: width,
-		height: height,
-		pointerEvents: 'none',
-	};
-	const svgStyle: CSSProperties = {
-		position: 'absolute',
-		left: 0,
-		top: 0,
-		width: width,
-		height: height,
-		pointerEvents: 'none',
-	};
-	const primaryLineStyle: CSSProperties = {
-		position: 'relative',
-		fill: 'none',
-		stroke: lineColor,
-		strokeWidth: '2px',
-		strokeDasharray: dashed ? '4' : undefined,
-	};
-
-	const arrowHeadStyle: CSSProperties = {
-		position: 'relative',
-		fill: lineColor,
-	};
-
-	const majorAxis = fromRect.width;
-	const minorAxis = fromRect.height;
 	const arrowLength = 20;
 
 	const dx = x2 - x1;
@@ -110,42 +81,65 @@ const LineTo: React.FC<LineProps> = ({
 
 	if (dx === 0) {
 		const sign = Math.sign(dy);
-		const yOffset = sign * cutOffLengthEnd;
-		y_start = y1 + sign * radius_from;
-		y_end = y2 - yOffset;
+		const yOffsetStart = sign * cutOffLengthStart;
+		const yOffsetEnd = sign * cutOffLengthEnd;
+		y_start = y1 + yOffsetStart;
+		y_end = y2 - yOffsetEnd;
 	}
 
+	const url = `arrowhead-${id}`;
+
 	return (
-		<div className='line' style={style}>
-			<svg style={svgStyle}>
+		<div
+			className='line absolute pointer-events-none'
+			style={{
+				left: left + window.pageXOffset,
+				top: top + window.pageYOffset,
+				width: width,
+				height: height,
+			}}
+		>
+			<svg
+				className='absolute pointer-events-none'
+				style={{
+					left: 0,
+					top: 0,
+					width: width,
+					height: height,
+				}}
+			>
 				<path
 					id='primary-line'
+					className='relative fill-none stroke-[2px]'
 					d={`M ${x_start} ${y_start} L ${x_end} ${y_end}`}
-					style={primaryLineStyle}
+					style={{
+						stroke: lineColor,
+						strokeDasharray: dashed ? '4' : undefined,
+					}}
 					markerStart={
-						arrowType === 'to' || arrowType === 'both' ? 'url(#arrowhead)' : ''
+						arrowType === 'to' || arrowType === 'both' ? `url(#${url})` : ''
 					}
 					markerEnd={
-						arrowType === 'from' || arrowType === 'both'
-							? 'url(#arrowhead)'
-							: ''
+						arrowType === 'from' || arrowType === 'both' ? `url(#${url})` : ''
 					}
 				/>
-				{arrowType !== 'none' && (
-					<defs>
-						<marker
-							id='arrowhead'
-							style={arrowHeadStyle}
-							markerWidth='10'
-							markerHeight='7'
-							refX='0'
-							refY='3.5'
-							orient='auto-start-reverse'
-						>
-							<polygon points='0 0, 10 3.5, 0 7' />
-						</marker>
-					</defs>
-				)}
+				<defs>
+					<marker
+						id={url}
+						className='relative'
+						style={{
+							fill: lineColor,
+							visibility: arrowType !== 'none' ? 'visible' : 'hidden',
+						}}
+						markerWidth='10'
+						markerHeight='7'
+						refX='0'
+						refY='3.5'
+						orient='auto-start-reverse'
+					>
+						<polygon points='0 0, 10 3.5, 0 7' />
+					</marker>
+				</defs>
 			</svg>
 		</div>
 	);

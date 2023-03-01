@@ -136,14 +136,13 @@ function TreeGraph({
 				>
 					<Node node={node} />
 				</div>
-				<div>
-					<Line
-						key={node.id}
-						fromRect={fromRect}
-						toRect={toRect}
-						{...node.attributes.lineAttributes}
-					/>
-				</div>
+				<Line
+					id={node.id}
+					key={node.id}
+					fromRect={fromRect}
+					toRect={toRect}
+					{...node.attributes.lineAttributes}
+				/>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
 			</div>
 		);
