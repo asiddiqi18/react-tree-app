@@ -59,8 +59,6 @@ const LineTo: React.FC<LineProps> = ({
 		fill: lineColor,
 	};
 
-	const majorAxis = fromRect.width;
-	const minorAxis = fromRect.height;
 	const arrowLength = 20;
 
 	const dx = x2 - x1;
@@ -110,9 +108,10 @@ const LineTo: React.FC<LineProps> = ({
 
 	if (dx === 0) {
 		const sign = Math.sign(dy);
-		const yOffset = sign * cutOffLengthEnd;
-		y_start = y1 + sign * radius_from;
-		y_end = y2 - yOffset;
+		const yOffsetStart = sign * cutOffLengthStart;
+		const yOffsetEnd = sign * cutOffLengthEnd;
+		y_start = y1 + yOffsetStart;
+		y_end = y2 - yOffsetEnd;
 	}
 
 	return (
