@@ -18,7 +18,14 @@ export default function TreeSettingsModal({
 	handleUpdateTreeSettings: (data: TreeSettings) => void;
 }) {
 	return (
-		<Dialog open={open}>
+		<Dialog
+			open={open}
+			onClose={(_event, reason) => {
+				if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+					handleClose();
+				}
+			}}
+		>
 			<DialogTitle>
 				Edit Tree Settings{' '}
 				<IconButton
