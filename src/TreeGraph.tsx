@@ -57,7 +57,7 @@ function TreeGraph({
 									height: 16,
 									width: 16,
 									bottom: 0,
-									padding: 1.4,
+									padding: 1.5,
 								}}
 							>
 								<AddIcon />
@@ -154,7 +154,10 @@ function TreeGraph({
 	}
 
 	return (
-		<div className='w-full flex justify-center'>
+		<div
+			className='w-full flex justify-center'
+			style={{ backgroundColor: treeSettings.backgroundColor }}
+		>
 			<RenderNode node={tree.root} />
 		</div>
 	);

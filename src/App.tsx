@@ -205,7 +205,6 @@ function App() {
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<AppBar
-				position='static'
 				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 			>
 				<Toolbar>
@@ -228,6 +227,7 @@ function App() {
 				anchor='right'
 				open={drawerOpen}
 			>
+				<Toolbar />
 				<Toolbar>
 					<div className='w-full flex justify-between items-center'>
 						<h1 className='text-lg truncate mr-3'>
@@ -260,7 +260,7 @@ function App() {
 			</Drawer>
 
 			{tree && treeSettings && (
-				<div className='mt-40' ref={imageRef}>
+				<div className='pt-40' ref={imageRef}>
 					<TreeGraph
 						onNodeClick={handleNodeClick}
 						onAddNode={handleAddNode}
