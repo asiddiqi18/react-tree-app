@@ -200,7 +200,10 @@ function App() {
 		return <></>;
 	}
 	return (
-		<div>
+		<div
+			className='h-screen'
+			style={{ backgroundColor: treeSettings.backgroundColor }}
+		>
 			<AppBar
 				position='static'
 				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}

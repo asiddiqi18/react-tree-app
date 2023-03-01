@@ -154,10 +154,7 @@ function TreeGraph({
 	}
 
 	return (
-		<div
-			className='w-full flex justify-center'
-			style={{ backgroundColor: treeSettings.backgroundColor }}
-		>
+		<div className='w-full flex justify-center'>
 			<RenderNode node={tree.root} />
 		</div>
 	);
