@@ -28,6 +28,9 @@ import EditNodeForm from './forms/EditNodeForm';
 import EditTreeForm from './forms/EditTreeForm';
 import EditRandomTreeForm from './forms/GenerateRandomTree';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
+import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
+import GenerateTreeModal from './modals/GenerateTreeModal';
+import TreeSettingsModal from './modals/TreeSettingsModal';
 import DefaultTreeSettings from './resources/default_tree_settings.json';
 import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
@@ -246,6 +249,7 @@ function App() {
 					)}
 				</div>
 			</Drawer>
+
 			{tree && treeSettings && (
 				<div className='mt-40' ref={imageRef}>
 					<TreeGraph
@@ -257,107 +261,32 @@ function App() {
 				</div>
 			)}
 
-			<Dialog open={treeSettingsDialogOpen}>
-				<DialogTitle>
-					Edit Tree Settings{' '}
-					<IconButton
-						aria-label='close'
-						onClick={() => setTreeSettingsDialogOpen(false)}
-						sx={{
-							position: 'absolute',
-							right: 8,
-							top: 8,
-						}}
-					>
-						<CloseIcon />
-					</IconButton>
-				</DialogTitle>
-				<DialogContent>
-					<EditTreeForm
-						treeSettings={treeSettings}
-						onSubmit={handleUpdateTreeSettings}
-					/>
-				</DialogContent>
-			</Dialog>
+			<TreeSettingsModal
+				open={treeSettingsDialogOpen}
+				treeSettings={treeSettings}
+				handleClose={() => setTreeSettingsDialogOpen(false)}
+				handleUpdateTreeSettings={handleUpdateTreeSettings}
+			/>
 
-			<Dialog
+			<GenerateTreeModal
 				open={randomTreeSettingsDialogOpen}
-				onClose={(event, reason) => {
-					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-						setRandomTreeSettingsDialogOpen(false);
-					}
-				}}
-			>
-				<DialogTitle>
-					Generate Random Tree{' '}
-					<IconButton
-						aria-label='close'
-						onClick={() => setRandomTreeSettingsDialogOpen(false)}
-						sx={{
-							position: 'absolute',
-							right: 8,
-							top: 8,
-						}}
-					>
-						<CloseIcon />
-					</IconButton>
-				</DialogTitle>
-				<DialogContent>
-					{randomTreeSettings && (
-						<EditRandomTreeForm
-							randomTreeSettings={randomTreeSettings}
-							onSubmit={handleUpdateRandomTreeSettings}
-						/>
-					)}
-				</DialogContent>
-			</Dialog>
+				randomTreeSettings={randomTreeSettings}
+				handleClose={() => setRandomTreeSettingsDialogOpen(false)}
+				handleUpdateRandomTreeSettings={handleUpdateRandomTreeSettings}
+			/>
 
-			<Dialog
+			<ConfirmDeleteModal
 				open={confirmDeleteDialogOpen}
-				onClose={(event, reason) => {
-					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-						setRandomTreeSettingsDialogOpen(false);
+				handleClose={() => setConfirmDeleteDialogOpen(false)}
+				handleDeleteTree={() => {
+					if (tree) {
+						const treeObj = createTreeObj();
+						updateTree(treeObj);
 					}
+					setConfirmDeleteDialogOpen(false);
+					setDrawerOpen(false);
 				}}
-			>
-				<DialogTitle>
-					Confirm delete
-					<IconButton
-						aria-label='close'
-						onClick={() => setConfirmDeleteDialogOpen(false)}
-						sx={{
-							position: 'absolute',
-							right: 8,
-							top: 8,
-						}}
-					>
-						<CloseIcon />
-					</IconButton>
-				</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						Are you sure you want to delete this tree?
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setConfirmDeleteDialogOpen(false)}>
-						No, take me back
-					</Button>
-					<Button
-						onClick={() => {
-							if (tree) {
-								const treeObj = createTreeObj();
-								updateTree(treeObj);
-							}
-							setConfirmDeleteDialogOpen(false);
-							setDrawerOpen(false);
-						}}
-						autoFocus
-					>
-						Yes
-					</Button>
-				</DialogActions>
-			</Dialog>
+			/>
 
 			<div className='fixed bottom-4 left-4 z-20'>
 				<div className='flex gap-5'>
