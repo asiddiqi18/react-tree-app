@@ -1,112 +1,37 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
+
+import { toSvg } from 'html-to-image';
+import _ from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+import ClearIcon from '@mui/icons-material/Clear';
+import CloseIcon from '@mui/icons-material/Close';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Tooltip from '@mui/material/Tooltip';
+
+import EditNodeForm from './forms/EditNodeForm';
+import EditTreeForm from './forms/EditTreeForm';
+import EditRandomTreeForm from './forms/GenerateRandomTree';
+import { getDataFromLocal, saveDataToLocal } from './localStorage';
+import DefaultTreeSettings from './resources/default_tree_settings.json';
+import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
 import TreeGraph from './TreeGraph';
-import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import ClearIcon from '@mui/icons-material/Clear';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import { toJpeg, toPng, toSvg } from 'html-to-image';
-import EditNodeForm, { FormInputs } from './EditNodeForm';
-import _ from 'lodash';
-
-interface MyData {
-	tree: Tree;
-}
+import {
+	GenerateRandomTreeSettings,
+	LocalData,
+	TreeNodeAttributes,
+	TreeSettings,
+} from './types';
 
 function createTreeObj() {
-	const data = {
-		rootId: 0,
-		nodes: [
-			{
-				id: 0,
-				attributes: {
-					value: 'root',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [1, 2],
-			},
-			{
-				id: 1,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 2,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [3, 4, 5],
-			},
-			{
-				id: 3,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 4,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-			{
-				id: 5,
-				attributes: {
-					value: 'new',
-					backgroundColor: '#a5d6a7',
-					textColor: '#000000',
-					lineAttributes: {
-						showArrow: false,
-						dashed: false,
-						lineColor: '#000000',
-					},
-				},
-				childrenIds: [],
-			},
-		],
-	};
-
-	return Tree.deserialize(JSON.stringify(data));
+	return Tree.deserialize(EmptyTree);
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -119,7 +44,31 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
+		useState<boolean>(false);
+	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
+		useState<boolean>(false);
+	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
+	const [randomTreeSettings, setRandomTreeSettings] =
+		useState<GenerateRandomTreeSettings>({ numberOfNodes: 16 });
 	const imageRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const treeObj = getDataFromLocal();
+
+		if (treeObj?.tree) {
+			const tree1: Tree = treeObj.tree;
+			const importedTree = cloneTree(tree1);
+			setTree(importedTree);
+		} else {
+			setTree(createTreeObj());
+		}
+		if (treeObj?.treeSettings) {
+			setTreeSettings(treeObj?.treeSettings);
+		} else {
+			setTreeSettings(DefaultTreeSettings);
+		}
+	}, []);
 
 	const handleScreenshotButtonClick = useCallback(() => {
 		if (imageRef.current === null) {
@@ -129,7 +78,7 @@ function App() {
 		toSvg(imageRef.current, { cacheBust: true, height: 1000 })
 			.then((dataUrl) => {
 				const link = document.createElement('a');
-				link.download = 'my-image-name.svg';
+				link.download = 'my-tree.svg';
 				link.href = dataUrl;
 				link.click();
 			})
@@ -137,31 +86,6 @@ function App() {
 				console.log(err);
 			});
 	}, [imageRef]);
-
-	const saveDataToLocal = (data: MyData) => {
-		if (tree) {
-			localStorage.setItem('myData', data.tree.serialize());
-		}
-	};
-
-	const getDataFromLocal = (): MyData | null => {
-		const data = localStorage.getItem('myData');
-		if (data) {
-			return { tree: Tree.deserialize(data) };
-		}
-		return null;
-	};
-
-	useEffect(() => {
-		const treeObj = getDataFromLocal();
-		if (treeObj) {
-			const tree1: Tree = treeObj.tree;
-			const importedTree = cloneTree(tree1);
-			setTree(importedTree);
-		} else {
-			setTree(createTreeObj());
-		}
-	}, []);
 
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
@@ -180,75 +104,91 @@ function App() {
 	);
 
 	const updateTree = (newTree: Tree) => {
-		if (newTree) {
+		if (newTree && tree && treeSettings) {
 			setTree(newTree);
-			const myData: MyData = { tree: newTree };
+			const myData: LocalData = { tree: newTree, treeSettings };
 			_.debounce(() => {
 				saveDataToLocal(myData);
 			}, 500)();
 		}
 	};
 
-	const handleUpdateSelectedNode = (data: FormInputs) => {
+	const handleUpdateSelectedNode = (data: TreeNodeAttributes) => {
 		if (selectedNode && tree) {
 			const updatedTree: Tree = cloneTree(tree); // clone tree
-			updatedTree.updateNode(selectedNode, {
-				value: data.value,
-				backgroundColor: data.backgroundColor,
-				textColor: data.textColor,
-				lineAttributes: {
-					showArrow: data.arrowedLine,
-					dashed: data.dashedLine,
-					lineColor: data.lineColor,
-				},
-			});
+			updatedTree.updateNode(selectedNode, data);
 			updateTree(updatedTree);
 		}
 	};
 
+	const handleUpdateTreeSettings = (data: TreeSettings) => {
+		setTreeSettings({ ...data });
+		setTreeSettingsDialogOpen(false);
+		if (!tree) {
+			return;
+		}
+		saveDataToLocal({ tree, treeSettings: data });
+	};
+
+	const handleUpdateRandomTreeSettings = (data: GenerateRandomTreeSettings) => {
+		setRandomTreeSettings({ ...data });
+		setRandomTreeSettingsDialogOpen(false);
+
+		const treeObj = Tree.generateRandomTree(data.numberOfNodes);
+		updateTree(treeObj);
+	};
+
 	const handleAddNode = useCallback(
 		(node: TreeNode) => {
-			if (tree) {
-				const updatedTree: Tree = cloneTree(tree);
-				updatedTree.addNode(node, 'new');
-				updateTree(updatedTree);
+			if (!tree) {
+				return;
 			}
+			const updatedTree: Tree = cloneTree(tree);
+			updatedTree.addNode(node, 'new');
+			updateTree(updatedTree);
 		},
 		[tree]
 	);
 
 	const handleInvertNode = useCallback(
 		(node: TreeNode) => {
-			if (tree) {
-				const updatedTree: Tree = cloneTree(tree);
-				updatedTree.invertSubtree(node);
-				updateTree(updatedTree);
+			if (!tree) {
+				return;
 			}
+			const updatedTree: Tree = cloneTree(tree);
+			updatedTree.invertSubtree(node);
+			updateTree(updatedTree);
 		},
 		[tree]
 	);
 
 	const handleDeleteNode = (node: TreeNode) => {
-		if (tree) {
-			const updatedTree: Tree = cloneTree(tree);
-			updatedTree.removeNode(node);
-			updateTree(updatedTree);
-			setSelectedNode(undefined);
-			handleDrawerClose();
+		if (!tree) {
+			return;
 		}
+		const updatedTree: Tree = cloneTree(tree);
+		updatedTree.removeNode(node);
+		updateTree(updatedTree);
+		setSelectedNode(undefined);
+		handleDrawerClose();
 	};
 
 	const handleShift = (node: TreeNode, direction: 'left' | 'right') => {
-		if (tree) {
-			const updatedTree: Tree = cloneTree(tree);
-			if (direction === 'left') {
-				updatedTree.shiftLeft(node);
-			} else if (direction === 'right') {
-				updatedTree.shiftRight(node);
-			}
-			updateTree(updatedTree);
+		if (!tree) {
+			return;
 		}
+		const updatedTree: Tree = cloneTree(tree);
+		if (direction === 'left') {
+			updatedTree.shiftLeft(node);
+		} else if (direction === 'right') {
+			updatedTree.shiftRight(node);
+		}
+		updateTree(updatedTree);
 	};
+
+	if (!tree || !treeSettings) {
+		return <></>;
+	}
 
 	return (
 		<div>
@@ -267,7 +207,9 @@ function App() {
 			>
 				<Toolbar>
 					<div className='w-full flex justify-between items-center'>
-						<h1>Modify Node &apos;{selectedNode?.attributes.value}&apos;</h1>
+						<h1 className='text-lg truncate mr-3'>
+							Modify Node - {selectedNode?.attributes.value}
+						</h1>
 						<IconButton
 							color='inherit'
 							aria-label='open drawer'
@@ -278,52 +220,130 @@ function App() {
 						</IconButton>
 					</div>
 				</Toolbar>
-				<Divider className='mt-12' />
-				<div className='mx-5 my-12'>
+				<Divider />
+				<div className='my-4'>
 					{selectedNode && (
-						<EditNodeForm
-							selectedNode={selectedNode}
-							onSubmit={handleUpdateSelectedNode}
-							onDelete={handleDeleteNode}
-							onInvert={handleInvertNode}
-							onShift={handleShift}
-						/>
+						<div>
+							<EditNodeForm
+								selectedNode={selectedNode}
+								onSubmit={handleUpdateSelectedNode}
+								onDelete={handleDeleteNode}
+								onInvert={handleInvertNode}
+								onShift={handleShift}
+							/>
+						</div>
 					)}
 				</div>
 			</Drawer>
-			{tree && (
+			{tree && treeSettings && (
 				<div className='mt-40' ref={imageRef}>
 					<TreeGraph
 						onNodeClick={handleNodeClick}
 						onAddNode={handleAddNode}
 						tree={tree}
+						treeSettings={treeSettings}
 					/>
 				</div>
 			)}
-			<div style={{ position: 'fixed', bottom: '16px', left: '16px' }}>
+
+			<Dialog open={treeSettingsDialogOpen}>
+				<DialogTitle>
+					Edit Tree Settings{' '}
+					<IconButton
+						aria-label='close'
+						onClick={() => setTreeSettingsDialogOpen(false)}
+						sx={{
+							position: 'absolute',
+							right: 8,
+							top: 8,
+						}}
+					>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
+				<DialogContent>
+					<EditTreeForm
+						treeSettings={treeSettings}
+						onSubmit={handleUpdateTreeSettings}
+					/>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog
+				open={randomTreeSettingsDialogOpen}
+				onClose={(event, reason) => {
+					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+						setRandomTreeSettingsDialogOpen(false);
+					}
+				}}
+			>
+				<DialogTitle>
+					Generate Random Tree{' '}
+					<IconButton
+						aria-label='close'
+						onClick={() => setRandomTreeSettingsDialogOpen(false)}
+						sx={{
+							position: 'absolute',
+							right: 8,
+							top: 8,
+						}}
+					>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
+				<DialogContent>
+					{randomTreeSettings && (
+						<EditRandomTreeForm
+							randomTreeSettings={randomTreeSettings}
+							onSubmit={handleUpdateRandomTreeSettings}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
+
+			<div
+				style={{
+					position: 'fixed',
+					bottom: '16px',
+					left: '16px',
+					zIndex: '20',
+				}}
+			>
 				<div className='flex gap-5'>
-					<Fab
-						color='error'
-						onClick={() => {
-							if (tree) {
-								handleDeleteNode(tree.root);
-							}
-						}}
-					>
-						<ClearIcon />
-					</Fab>
-					<Fab
-						color='info'
-						onClick={() => {
-							const treeObj = Tree.generateRandomTree(16);
-							updateTree(treeObj);
-						}}
-					>
-						<ShuffleIcon />
-					</Fab>
-					<Fab color='success' onClick={handleScreenshotButtonClick}>
-						<PhotoCameraIcon />
-					</Fab>
+					<Tooltip title='Delete'>
+						<Fab
+							color='error'
+							onClick={() => {
+								if (tree) {
+									const treeObj = createTreeObj();
+									updateTree(treeObj);
+								}
+							}}
+						>
+							<ClearIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Randomize'>
+						<Fab
+							color='info'
+							onClick={() => setRandomTreeSettingsDialogOpen(true)}
+						>
+							<ShuffleIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Screenshot'>
+						<Fab color='success' onClick={handleScreenshotButtonClick}>
+							<PhotoCameraIcon />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Settings'>
+						<Fab
+							color='secondary'
+							onClick={() => setTreeSettingsDialogOpen(true)}
+						>
+							<SettingsIcon />
+						</Fab>
+					</Tooltip>
 				</div>
 			</div>
 		</div>

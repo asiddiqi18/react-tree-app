@@ -1,19 +1,21 @@
-import React from 'react';
-import { memo, useEffect, useRef, useState } from 'react';
-import { Tree, TreeNode } from './tree';
-import Line from './Line';
-import { useWindowResize } from './useWindowSize';
-import { IconButton } from '@mui/material';
+import React, { memo, useEffect, useRef, useState } from 'react';
+
 import AddIcon from '@mui/icons-material/Add';
-const NODE_WIDTH = '96px';
-const NODE_HEIGHT = '96px';
+import { IconButton } from '@mui/material';
+
+import Line from './Line';
+import { Tree, TreeNode } from './tree';
+import { TreeSettings } from './types';
+import { useWindowResize } from './useWindowSize';
 
 function TreeGraph({
 	tree,
+	treeSettings,
 	onNodeClick,
 	onAddNode,
 }: {
 	tree: Tree;
+	treeSettings: TreeSettings;
 	onNodeClick: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
@@ -27,53 +29,45 @@ function TreeGraph({
 			onAddNode(node);
 		};
 
-		const bubble = () => {
-			return (
-				<div
-					className='hover:brightness-95 hover:shadow-xl my-5 mx-2 px-2 flex justify-center items-center text-center rounded-full cursor-pointer '
-					style={{
-						width: NODE_WIDTH,
-						height: NODE_HEIGHT,
-						backgroundColor: node.attributes.backgroundColor,
-						color: node.attributes.textColor,
-						// borderStyle: 'inset',
-						// borderWidth: 4,
-						// borderColor: 'red',
-					}}
-					onClick={() => onNodeClick(node)}
-					onMouseEnter={() => setHover(true)}
-					onMouseLeave={() => setHover(false)}
-				>
-					<div className='flex flex-col justify-between items-center h-full'>
-						<div className='flex-1'></div>
-						<p className='pt-1 flex-1 break-words'>
-							{node.id} - {node.attributes.value}
-						</p>
-						<div className='flex-1'>
-							{hover && (
-								<IconButton
-									onClick={(e) => handlePlusClick(e)}
-									color='success'
-									sx={{
-										'&:hover': {
-											backgroundColor: '#81c784',
-										},
-										height: 16,
-										width: 16,
-										bottom: 0,
-										padding: 1.4,
-									}}
-								>
-									<AddIcon />
-								</IconButton>
-							)}
-						</div>
+		return (
+			<div
+				className=' hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+				style={{
+					width: node.attributes.nodeWidth,
+					height: node.attributes.nodeHeight,
+					borderRadius: '50%',
+					backgroundColor: node.attributes.backgroundColor,
+					color: node.attributes.textColor,
+				}}
+				onClick={() => onNodeClick(node)}
+				onMouseEnter={() => setHover(true)}
+				onMouseLeave={() => setHover(false)}
+			>
+				<div className='flex flex-col justify-between items-center h-full'>
+					<div className='flex-1'></div>
+					<p className='pt-1 flex-1 break-words'>{node.attributes.value}</p>
+					<div className='flex-1'>
+						{hover && (
+							<IconButton
+								onClick={(e) => handlePlusClick(e)}
+								color='success'
+								sx={{
+									'&:hover': {
+										backgroundColor: '#81c784',
+									},
+									height: 16,
+									width: 16,
+									bottom: 0,
+									padding: 1.4,
+								}}
+							>
+								<AddIcon />
+							</IconButton>
+						)}
 					</div>
 				</div>
-			);
-		};
-
-		return bubble();
+			</div>
+		);
 	}
 
 	function NodeForest({
@@ -130,17 +124,26 @@ function TreeGraph({
 
 		return (
 			<div id={node.attributes.value} className='flex flex-col items-center'>
-				<div ref={nodeRef} id={`${node.attributes.value}-node`}>
+				<div
+					ref={nodeRef}
+					id={`${node.attributes.value}-node`}
+					style={{
+						marginTop: treeSettings.levelHeight / 2,
+						marginBottom: treeSettings.levelHeight / 2,
+						marginLeft: treeSettings.siblingSpace / 2,
+						marginRight: treeSettings.siblingSpace / 2,
+					}}
+				>
 					<Node node={node} />
 				</div>
-				<Line
-					key={node.id}
-					fromRect={fromRect}
-					toRect={toRect}
-					lineColor={node.attributes.lineAttributes.lineColor}
-					dashed={node.attributes.lineAttributes.dashed}
-					showArrow={node.attributes.lineAttributes.showArrow}
-				/>
+				<div>
+					<Line
+						key={node.id}
+						fromRect={fromRect}
+						toRect={toRect}
+						{...node.attributes.lineAttributes}
+					/>
+				</div>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}
 			</div>
 		);
@@ -153,7 +156,10 @@ function TreeGraph({
 	}
 
 	return (
-		<div className='w-full flex justify-center'>
+		<div
+			className='w-full flex justify-center'
+			style={{ backgroundColor: treeSettings.backgroundColor }}
+		>
 			<RenderNode node={tree.root} />
 		</div>
 	);
