@@ -31,11 +31,10 @@ function TreeGraph({
 
 		return (
 			<div
-				className=' hover:brightness-95 hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+				className=' hover:brightness-95 rounded-[50%] hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
 					width: node.attributes.nodeWidth,
 					height: node.attributes.nodeHeight,
-					borderRadius: '50%',
 					backgroundColor: node.attributes.backgroundColor,
 					color: node.attributes.textColor,
 				}}

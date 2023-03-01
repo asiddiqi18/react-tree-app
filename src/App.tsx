@@ -359,14 +359,7 @@ function App() {
 				</DialogActions>
 			</Dialog>
 
-			<div
-				style={{
-					position: 'fixed',
-					bottom: '16px',
-					left: '16px',
-					zIndex: '20',
-				}}
-			>
+			<div className='fixed bottom-4 left-4 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
 						<Fab color='error' onClick={() => setConfirmDeleteDialogOpen(true)}>
