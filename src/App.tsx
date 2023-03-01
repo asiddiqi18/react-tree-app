@@ -6,27 +6,23 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
+	AppBar,
 	Button,
-	DialogActions,
-	DialogContentText,
 	Divider,
 	Drawer,
 	Fab,
 	IconButton,
 	Toolbar,
+	Typography,
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Tooltip from '@mui/material/Tooltip';
 
 import EditNodeForm from './forms/EditNodeForm';
-import EditTreeForm from './forms/EditTreeForm';
-import EditRandomTreeForm from './forms/GenerateRandomTree';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
 import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
 import GenerateTreeModal from './modals/GenerateTreeModal';
@@ -203,9 +199,19 @@ function App() {
 	if (!tree || !treeSettings) {
 		return <></>;
 	}
-
 	return (
 		<div>
+			<AppBar
+				position='static'
+				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+			>
+				<Toolbar>
+					<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+						Easy Tree Maker
+					</Typography>
+				</Toolbar>
+			</AppBar>
+
 			<Drawer
 				sx={{
 					width: drawerWidth,
