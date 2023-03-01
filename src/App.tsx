@@ -9,7 +9,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
+import {
+	Button,
+	DialogActions,
+	DialogContentText,
+	Divider,
+	Drawer,
+	Fab,
+	IconButton,
+	Toolbar,
+} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -47,6 +56,8 @@ function App() {
 	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
 		useState<boolean>(false);
 	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
+		useState<boolean>(false);
+	const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] =
 		useState<boolean>(false);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const [randomTreeSettings, setRandomTreeSettings] =
@@ -301,6 +312,53 @@ function App() {
 				</DialogContent>
 			</Dialog>
 
+			<Dialog
+				open={confirmDeleteDialogOpen}
+				onClose={(event, reason) => {
+					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+						setRandomTreeSettingsDialogOpen(false);
+					}
+				}}
+			>
+				<DialogTitle>
+					Confirm delete
+					<IconButton
+						aria-label='close'
+						onClick={() => setConfirmDeleteDialogOpen(false)}
+						sx={{
+							position: 'absolute',
+							right: 8,
+							top: 8,
+						}}
+					>
+						<CloseIcon />
+					</IconButton>
+				</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Are you sure you want to delete this tree?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setConfirmDeleteDialogOpen(false)}>
+						No, take me back
+					</Button>
+					<Button
+						onClick={() => {
+							if (tree) {
+								const treeObj = createTreeObj();
+								updateTree(treeObj);
+							}
+							setConfirmDeleteDialogOpen(false);
+							setDrawerOpen(false);
+						}}
+						autoFocus
+					>
+						Yes
+					</Button>
+				</DialogActions>
+			</Dialog>
+
 			<div
 				style={{
 					position: 'fixed',
@@ -311,15 +369,7 @@ function App() {
 			>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
-						<Fab
-							color='error'
-							onClick={() => {
-								if (tree) {
-									const treeObj = createTreeObj();
-									updateTree(treeObj);
-								}
-							}}
-						>
+						<Fab color='error' onClick={() => setConfirmDeleteDialogOpen(true)}>
 							<ClearIcon />
 						</Fab>
 					</Tooltip>
