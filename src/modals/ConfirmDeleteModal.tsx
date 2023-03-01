@@ -11,9 +11,6 @@ import {
 	IconButton,
 } from '@mui/material';
 
-import EditRandomTreeForm from '../forms/GenerateRandomTree';
-import { GenerateRandomTreeSettings } from '../types';
-
 export default function ConfirmDeleteModal({
 	open,
 	handleClose,
