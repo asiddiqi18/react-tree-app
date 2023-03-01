@@ -6,19 +6,27 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-import { Divider, Drawer, Fab, IconButton, Toolbar } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+	AppBar,
+	Button,
+	Divider,
+	Drawer,
+	Fab,
+	IconButton,
+	Toolbar,
+	Typography,
+} from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
 import EditNodeForm from './forms/EditNodeForm';
-import EditTreeForm from './forms/EditTreeForm';
-import EditRandomTreeForm from './forms/GenerateRandomTree';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
+import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
+import GenerateTreeModal from './modals/GenerateTreeModal';
+import TreeSettingsModal from './modals/TreeSettingsModal';
 import DefaultTreeSettings from './resources/default_tree_settings.json';
 import EmptyTree from './resources/empty_tree.json';
 import { Tree, TreeNode } from './tree';
@@ -47,6 +55,8 @@ function App() {
 	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
 		useState<boolean>(false);
 	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
+		useState<boolean>(false);
+	const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] =
 		useState<boolean>(false);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const [randomTreeSettings, setRandomTreeSettings] =
@@ -189,9 +199,19 @@ function App() {
 	if (!tree || !treeSettings) {
 		return <></>;
 	}
-
 	return (
 		<div>
+			<AppBar
+				position='static'
+				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+			>
+				<Toolbar>
+					<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+						Easy Tree Maker
+					</Typography>
+				</Toolbar>
+			</AppBar>
+
 			<Drawer
 				sx={{
 					width: drawerWidth,
@@ -235,6 +255,7 @@ function App() {
 					)}
 				</div>
 			</Drawer>
+
 			{tree && treeSettings && (
 				<div className='mt-40' ref={imageRef}>
 					<TreeGraph
@@ -246,80 +267,37 @@ function App() {
 				</div>
 			)}
 
-			<Dialog open={treeSettingsDialogOpen}>
-				<DialogTitle>
-					Edit Tree Settings{' '}
-					<IconButton
-						aria-label='close'
-						onClick={() => setTreeSettingsDialogOpen(false)}
-						sx={{
-							position: 'absolute',
-							right: 8,
-							top: 8,
-						}}
-					>
-						<CloseIcon />
-					</IconButton>
-				</DialogTitle>
-				<DialogContent>
-					<EditTreeForm
-						treeSettings={treeSettings}
-						onSubmit={handleUpdateTreeSettings}
-					/>
-				</DialogContent>
-			</Dialog>
+			<TreeSettingsModal
+				open={treeSettingsDialogOpen}
+				treeSettings={treeSettings}
+				handleClose={() => setTreeSettingsDialogOpen(false)}
+				handleUpdateTreeSettings={handleUpdateTreeSettings}
+			/>
 
-			<Dialog
+			<GenerateTreeModal
 				open={randomTreeSettingsDialogOpen}
-				onClose={(event, reason) => {
-					if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-						setRandomTreeSettingsDialogOpen(false);
-					}
-				}}
-			>
-				<DialogTitle>
-					Generate Random Tree{' '}
-					<IconButton
-						aria-label='close'
-						onClick={() => setRandomTreeSettingsDialogOpen(false)}
-						sx={{
-							position: 'absolute',
-							right: 8,
-							top: 8,
-						}}
-					>
-						<CloseIcon />
-					</IconButton>
-				</DialogTitle>
-				<DialogContent>
-					{randomTreeSettings && (
-						<EditRandomTreeForm
-							randomTreeSettings={randomTreeSettings}
-							onSubmit={handleUpdateRandomTreeSettings}
-						/>
-					)}
-				</DialogContent>
-			</Dialog>
+				randomTreeSettings={randomTreeSettings}
+				handleClose={() => setRandomTreeSettingsDialogOpen(false)}
+				handleUpdateRandomTreeSettings={handleUpdateRandomTreeSettings}
+			/>
 
-			<div
-				style={{
-					position: 'fixed',
-					bottom: '16px',
-					left: '16px',
-					zIndex: '20',
+			<ConfirmDeleteModal
+				open={confirmDeleteDialogOpen}
+				handleClose={() => setConfirmDeleteDialogOpen(false)}
+				handleDeleteTree={() => {
+					if (tree) {
+						const treeObj = createTreeObj();
+						updateTree(treeObj);
+					}
+					setConfirmDeleteDialogOpen(false);
+					setDrawerOpen(false);
 				}}
-			>
+			/>
+
+			<div className='fixed bottom-4 left-4 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
-						<Fab
-							color='error'
-							onClick={() => {
-								if (tree) {
-									const treeObj = createTreeObj();
-									updateTree(treeObj);
-								}
-							}}
-						>
+						<Fab color='error' onClick={() => setConfirmDeleteDialogOpen(true)}>
 							<ClearIcon />
 						</Fab>
 					</Tooltip>
