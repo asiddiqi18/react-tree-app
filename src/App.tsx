@@ -207,7 +207,7 @@ function App() {
 			>
 				<Toolbar>
 					<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-						Easy Tree Maker
+						Simple Tree Maker
 					</Typography>
 				</Toolbar>
 			</AppBar>
