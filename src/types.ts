@@ -40,3 +40,8 @@ export interface LocalData {
 export type GenerateRandomTreeSettings = {
 	numberOfNodes: number;
 };
+
+export type ScreenshotSettings = {
+	format: string;
+	file_name: string;
+};

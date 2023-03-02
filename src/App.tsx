@@ -1,6 +1,7 @@
 import './App.css';
 
-import { toSvg } from 'html-to-image';
+import { toJpeg, toPng, toSvg } from 'html-to-image';
+import { Options } from 'html-to-image/lib/types';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -26,6 +27,7 @@ import EditNodeForm from './forms/EditNodeForm';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
 import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
 import GenerateTreeModal from './modals/GenerateTreeModal';
+import TakeScreenshotModal from './modals/TakeScreenshotModal';
 import TreeSettingsModal from './modals/TreeSettingsModal';
 import DefaultTreeSettings from './resources/default_tree_settings.json';
 import EmptyTree from './resources/empty_tree.json';
@@ -34,6 +36,7 @@ import TreeGraph from './TreeGraph';
 import {
 	GenerateRandomTreeSettings,
 	LocalData,
+	ScreenshotSettings,
 	TreeNodeAttributes,
 	TreeSettings,
 } from './types';
@@ -58,6 +61,8 @@ function App() {
 		useState<boolean>(false);
 	const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] =
 		useState<boolean>(false);
+	const [screenshotDialogOpen, setScreenshotDialogOpen] =
+		useState<boolean>(false);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const [randomTreeSettings, setRandomTreeSettings] =
 		useState<GenerateRandomTreeSettings>({ numberOfNodes: 16 });
@@ -80,22 +85,54 @@ function App() {
 		}
 	}, []);
 
-	const handleScreenshotButtonClick = useCallback(() => {
-		if (imageRef.current === null) {
-			return;
-		}
+	const handleScreenshotButtonClick = useCallback(
+		(settings: ScreenshotSettings) => {
+			if (imageRef.current === null) {
+				return;
+			}
 
-		toSvg(imageRef.current, { cacheBust: true, height: 1000 })
-			.then((dataUrl) => {
+			const options: Options = { cacheBust: true, height: 1000 };
+
+			function createImage(dataUrl: string) {
 				const link = document.createElement('a');
-				link.download = 'my-tree.svg';
+				link.download =
+					settings.file_name + '.' + settings.format.toLowerCase();
 				link.href = dataUrl;
 				link.click();
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, [imageRef]);
+			}
+
+			switch (settings.format) {
+			case 'PNG':
+				toPng(imageRef.current, options)
+					.then((dataUrl) => {
+						createImage(dataUrl);
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+				break;
+			case 'JPEG':
+				toJpeg(imageRef.current, options)
+					.then((dataUrl) => {
+						createImage(dataUrl);
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+				break;
+			case 'SVG':
+				toSvg(imageRef.current, options)
+					.then((dataUrl) => {
+						createImage(dataUrl);
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+				break;
+			}
+		},
+		[imageRef]
+	);
 
 	const handleDrawerOpen = () => {
 		setDrawerOpen(true);
@@ -297,6 +334,15 @@ function App() {
 				}}
 			/>
 
+			<TakeScreenshotModal
+				open={screenshotDialogOpen}
+				handleClose={() => setScreenshotDialogOpen(false)}
+				handleChooseFormat={(data: ScreenshotSettings) => {
+					console.log(data);
+					handleScreenshotButtonClick(data);
+				}}
+			/>
+
 			<div className='fixed bottom-4 left-4 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
@@ -313,7 +359,12 @@ function App() {
 						</Fab>
 					</Tooltip>
 					<Tooltip title='Screenshot'>
-						<Fab color='success' onClick={handleScreenshotButtonClick}>
+						<Fab
+							color='success'
+							onClick={() => {
+								setScreenshotDialogOpen(true);
+							}}
+						>
 							<PhotoCameraIcon />
 						</Fab>
 					</Tooltip>
