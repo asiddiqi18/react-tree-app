@@ -84,6 +84,9 @@ function EditTreeForm({
 							InputLabelProps={{
 								shrink: true,
 							}}
+							inputProps={{
+								step: '10',
+							}}
 						/>
 					)}
 				/>
@@ -101,6 +104,9 @@ function EditTreeForm({
 							type='number'
 							InputLabelProps={{
 								shrink: true,
+							}}
+							inputProps={{
+								step: '10',
 							}}
 						/>
 					)}

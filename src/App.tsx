@@ -201,7 +201,7 @@ function App() {
 	}
 	return (
 		<div
-			className='h-screen'
+			className='h-screen w-screen min-w-max'
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<AppBar

@@ -31,7 +31,7 @@ function TreeGraph({
 
 		return (
 			<div
-				className=' hover:brightness-95 rounded-[50%] hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
+				className='hover:brightness-95 rounded-[50%] hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
 					width: node.attributes.nodeWidth,
 					height: node.attributes.nodeHeight,
@@ -155,7 +155,7 @@ function TreeGraph({
 
 	return (
 		<div
-			className='w-full flex justify-center'
+			className='flex justify-center items-center'
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<RenderNode node={tree.root} />
