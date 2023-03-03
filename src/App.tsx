@@ -41,8 +41,8 @@ import {
 	TreeSettings,
 } from './types';
 
-function createTreeObj() {
-	return Tree.deserialize(EmptyTree);
+export function createEmptyTree() {
+	return Tree.deserialize(EmptyTree)!;
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -76,7 +76,7 @@ function App() {
 			const importedTree = cloneTree(tree1);
 			setTree(importedTree);
 		} else {
-			setTree(createTreeObj());
+			setTree(createEmptyTree());
 		}
 		if (treeObj?.treeSettings) {
 			setTreeSettings(treeObj?.treeSettings);
@@ -326,7 +326,7 @@ function App() {
 				handleClose={() => setConfirmDeleteDialogOpen(false)}
 				handleDeleteTree={() => {
 					if (tree) {
-						const treeObj = createTreeObj();
+						const treeObj = createEmptyTree();
 						updateTree(treeObj);
 					}
 					setConfirmDeleteDialogOpen(false);
