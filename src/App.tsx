@@ -19,11 +19,13 @@ import {
 	Drawer,
 	Fab,
 	IconButton,
+	Snackbar,
 	Toolbar,
 	Typography,
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
+import CustomSnackbar from './CustomSnackbar';
 import EditNodeForm from './forms/EditNodeForm';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
 import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
@@ -56,6 +58,8 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
+	const [snackBarMessage, setSnackBarMessage] = useState<string>('');
 	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
 		useState<boolean>(false);
 	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
@@ -238,9 +242,15 @@ function App() {
 	if (!tree || !treeSettings) {
 		return <></>;
 	}
+
+	const showSnackBar = (message: string) => {
+		setSnackBarMessage(message);
+		setSnackBarOpen(true);
+	};
+
 	return (
 		<div
-			className='h-screen w-screen min-w-max'
+			className='h-screen min-w-max'
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<AppBar
@@ -309,7 +319,6 @@ function App() {
 					</div>
 				</div>
 			)}
-			Zoom: {zoom}
 			<TreeSettingsModal
 				open={treeSettingsDialogOpen}
 				treeSettings={treeSettings}
@@ -342,6 +351,13 @@ function App() {
 					handleScreenshotButtonClick(data);
 				}}
 			/>
+			<CustomSnackbar
+				open={snackBarOpen}
+				message={snackBarMessage}
+				onClose={() => setSnackBarOpen(false)}
+				type='info'
+			/>
+
 			<div className='flex w-full px-4 justify-between fixed bottom-4 left-0 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
@@ -380,18 +396,22 @@ function App() {
 					<Tooltip title='Zoom in'>
 						<Fab
 							color='warning'
-							onClick={() =>
-								setZoom((prev) => (prev = Math.min(prev + 0.25, 2)))
-							}
+							onClick={() => {
+								const newZoom = Math.min(zoom + 0.25, 2);
+								setZoom(newZoom);
+								showSnackBar(`Zoomed in (x${newZoom})`);
+							}}
 						>
 							<Add />
 						</Fab>
 					</Tooltip>
 					<Tooltip
 						title='Zoom out'
-						onClick={() =>
-							setZoom((prev) => (prev = Math.max(prev - 0.25, 0.25)))
-						}
+						onClick={() => {
+							const newZoom = Math.max(zoom - 0.25, 0.25);
+							setZoom(newZoom);
+							showSnackBar(`Zoomed out (x${newZoom})`);
+						}}
 					>
 						<Fab color='warning'>
 							<Remove />

@@ -1,4 +1,5 @@
 {
-    "importSorter.generalConfiguration.sortOnBeforeSave": true,
-    "editor.formatOnSave": true
+	"importSorter.generalConfiguration.sortOnBeforeSave": true,
+	"editor.formatOnSave": true,
+	"cSpell.words": ["clickaway"]
 }
