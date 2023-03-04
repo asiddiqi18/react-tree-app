@@ -63,10 +63,10 @@ function TreeGraph({
 									'&:hover': {
 										backgroundColor: '#81c784',
 									},
-									height: zoom * 16,
-									width: zoom * 16,
+									height: zoom * 18,
+									width: zoom * 18,
 									bottom: 0,
-									padding: 1.5,
+									padding: zoom * 1.4,
 								}}
 							>
 								<AddIcon />
