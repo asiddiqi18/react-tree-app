@@ -396,6 +396,7 @@ function App() {
 					<Tooltip title='Zoom in'>
 						<Fab
 							color='warning'
+							disabled={zoom === 2}
 							onClick={() => {
 								const newZoom = Math.min(zoom + 0.25, 2);
 								setZoom(newZoom);
@@ -405,15 +406,16 @@ function App() {
 							<Add />
 						</Fab>
 					</Tooltip>
-					<Tooltip
-						title='Zoom out'
-						onClick={() => {
-							const newZoom = Math.max(zoom - 0.25, 0.25);
-							setZoom(newZoom);
-							showSnackBar(`Zoomed out (x${newZoom})`);
-						}}
-					>
-						<Fab color='warning'>
+					<Tooltip title='Zoom out'>
+						<Fab
+							color='warning'
+							disabled={zoom === 0.25}
+							onClick={() => {
+								const newZoom = Math.max(zoom - 0.25, 0.25);
+								setZoom(newZoom);
+								showSnackBar(`Zoomed out (x${newZoom})`);
+							}}
+						>
 							<Remove />
 						</Fab>
 					</Tooltip>
