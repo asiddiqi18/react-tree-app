@@ -35,8 +35,8 @@ function TreeGraph({
 			<div
 				className='hover:brightness-95 rounded-[50%] hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
 				style={{
-					width: node.attributes.nodeWidth,
-					height: node.attributes.nodeHeight,
+					width: zoom * node.attributes.nodeWidth,
+					height: zoom * node.attributes.nodeHeight,
 					backgroundColor: node.attributes.backgroundColor,
 					color: node.attributes.textColor,
 				}}
@@ -46,7 +46,14 @@ function TreeGraph({
 			>
 				<div className='flex flex-col justify-between items-center h-full'>
 					<div className='flex-1'></div>
-					<p className='pt-1 flex-1 break-words'>{node.attributes.value}</p>
+					<p
+						className='pt-1 flex-1 break-words'
+						style={{
+							fontSize: zoom * 16,
+						}}
+					>
+						{node.attributes.value}
+					</p>
 					<div className='flex-1'>
 						{hover && (
 							<IconButton
@@ -56,8 +63,8 @@ function TreeGraph({
 									'&:hover': {
 										backgroundColor: '#81c784',
 									},
-									height: 16,
-									width: 16,
+									height: zoom * 16,
+									width: zoom * 16,
 									bottom: 0,
 									padding: 1.5,
 								}}
@@ -129,7 +136,6 @@ function TreeGraph({
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
 					style={{
-						transform: `scale(${zoom})`,
 						marginTop: zoom * (treeSettings.levelHeight / 2),
 						marginBottom: zoom * (treeSettings.levelHeight / 2),
 						marginLeft: zoom * (treeSettings.siblingSpace / 2),
