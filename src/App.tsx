@@ -93,7 +93,7 @@ function App() {
 				return;
 			}
 
-			const options: Options = { cacheBust: true, height: 1000 };
+			const options: Options = { cacheBust: true };
 
 			function createImage(dataUrl: string) {
 				const link = document.createElement('a');
