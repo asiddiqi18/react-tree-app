@@ -11,11 +11,13 @@ import { useWindowResize } from './useWindowSize';
 function TreeGraph({
 	tree,
 	treeSettings,
+	zoom,
 	onNodeClick,
 	onAddNode,
 }: {
 	tree: Tree;
 	treeSettings: TreeSettings;
+	zoom: number;
 	onNodeClick: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
@@ -79,7 +81,7 @@ function TreeGraph({
 		return (
 			<>
 				{node.children && node.children.length > 0 && (
-					<div className='flex gap-x-4'>
+					<div className='flex' style={{ columnGap: zoom * 16 }}>
 						{node.children.map((child, index) => (
 							<div
 								id={`${node.attributes.value}-children-${index}`}
@@ -127,10 +129,11 @@ function TreeGraph({
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
 					style={{
-						marginTop: treeSettings.levelHeight / 2,
-						marginBottom: treeSettings.levelHeight / 2,
-						marginLeft: treeSettings.siblingSpace / 2,
-						marginRight: treeSettings.siblingSpace / 2,
+						transform: `scale(${zoom})`,
+						marginTop: zoom * (treeSettings.levelHeight / 2),
+						marginBottom: zoom * (treeSettings.levelHeight / 2),
+						marginLeft: zoom * (treeSettings.siblingSpace / 2),
+						marginRight: zoom * (treeSettings.siblingSpace / 2),
 					}}
 				>
 					<Node node={node} />
@@ -140,6 +143,7 @@ function TreeGraph({
 					key={node.id}
 					fromRect={fromRect}
 					toRect={toRect}
+					zoom={zoom}
 					{...node.attributes.lineAttributes}
 				/>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}

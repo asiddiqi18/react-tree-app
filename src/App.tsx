@@ -5,6 +5,7 @@ import { Options } from 'html-to-image/lib/types';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Add, Remove, ZoomIn, ZoomOut } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -63,6 +64,7 @@ function App() {
 		useState<boolean>(false);
 	const [screenshotDialogOpen, setScreenshotDialogOpen] =
 		useState<boolean>(false);
+	const [zoom, setZoom] = useState<number>(1);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const [randomTreeSettings, setRandomTreeSettings] =
 		useState<GenerateRandomTreeSettings>({ numberOfNodes: 16 });
@@ -250,7 +252,6 @@ function App() {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-
 			<Drawer
 				sx={{
 					width: drawerWidth,
@@ -295,32 +296,32 @@ function App() {
 					)}
 				</div>
 			</Drawer>
-
 			{tree && treeSettings && (
 				<div className='pt-40' ref={imageRef}>
-					<TreeGraph
-						onNodeClick={handleNodeClick}
-						onAddNode={handleAddNode}
-						tree={tree}
-						treeSettings={treeSettings}
-					/>
+					<div>
+						<TreeGraph
+							onNodeClick={handleNodeClick}
+							onAddNode={handleAddNode}
+							tree={tree}
+							treeSettings={treeSettings}
+							zoom={zoom}
+						/>
+					</div>
 				</div>
 			)}
-
+			Zoom: {zoom}
 			<TreeSettingsModal
 				open={treeSettingsDialogOpen}
 				treeSettings={treeSettings}
 				handleClose={() => setTreeSettingsDialogOpen(false)}
 				handleUpdateTreeSettings={handleUpdateTreeSettings}
 			/>
-
 			<GenerateTreeModal
 				open={randomTreeSettingsDialogOpen}
 				randomTreeSettings={randomTreeSettings}
 				handleClose={() => setRandomTreeSettingsDialogOpen(false)}
 				handleUpdateRandomTreeSettings={handleUpdateRandomTreeSettings}
 			/>
-
 			<ConfirmDeleteModal
 				open={confirmDeleteDialogOpen}
 				handleClose={() => setConfirmDeleteDialogOpen(false)}
@@ -333,7 +334,6 @@ function App() {
 					setDrawerOpen(false);
 				}}
 			/>
-
 			<TakeScreenshotModal
 				open={screenshotDialogOpen}
 				handleClose={() => setScreenshotDialogOpen(false)}
@@ -342,8 +342,7 @@ function App() {
 					handleScreenshotButtonClick(data);
 				}}
 			/>
-
-			<div className='fixed bottom-4 left-4 z-20'>
+			<div className='flex w-full px-4 justify-between fixed bottom-4 left-0 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
 						<Fab color='error' onClick={() => setConfirmDeleteDialogOpen(true)}>
@@ -374,6 +373,28 @@ function App() {
 							onClick={() => setTreeSettingsDialogOpen(true)}
 						>
 							<SettingsIcon />
+						</Fab>
+					</Tooltip>
+				</div>
+				<div className='flex gap-5'>
+					<Tooltip title='Zoom in'>
+						<Fab
+							color='warning'
+							onClick={() =>
+								setZoom((prev) => (prev = Math.min(prev + 0.25, 2)))
+							}
+						>
+							<Add />
+						</Fab>
+					</Tooltip>
+					<Tooltip
+						title='Zoom out'
+						onClick={() =>
+							setZoom((prev) => (prev = Math.max(prev - 0.25, 0.25)))
+						}
+					>
+						<Fab color='warning'>
+							<Remove />
 						</Fab>
 					</Tooltip>
 				</div>

@@ -4,6 +4,7 @@ type LineProps = {
 	id: number;
 	fromRect: DOMRect | null;
 	toRect: DOMRect | null;
+	zoom: number;
 	arrowType?: string;
 	dashedLine?: boolean;
 	lineColor?: string;
@@ -13,6 +14,7 @@ const LineTo: React.FC<LineProps> = ({
 	id,
 	fromRect,
 	toRect,
+	zoom,
 	arrowType,
 	dashedLine: dashed = false,
 	lineColor = 'black',
@@ -89,6 +91,8 @@ const LineTo: React.FC<LineProps> = ({
 
 	const url = `arrowhead-${id}`;
 
+	console.log(fromRect, toRect);
+
 	return (
 		<div
 			className='line absolute pointer-events-none'
@@ -110,10 +114,11 @@ const LineTo: React.FC<LineProps> = ({
 			>
 				<path
 					id='primary-line'
-					className='relative fill-none stroke-[2px]'
+					className='relative fill-none'
 					d={`M ${x_start} ${y_start} L ${x_end} ${y_end}`}
 					style={{
 						stroke: lineColor,
+						strokeWidth: 2 * zoom,
 						strokeDasharray: dashed ? '4' : undefined,
 					}}
 					markerStart={
