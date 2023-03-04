@@ -14,6 +14,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
 	AppBar,
+	Box,
 	Button,
 	Divider,
 	Drawer,
@@ -254,6 +255,7 @@ function App() {
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<AppBar
+				position='fixed'
 				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 			>
 				<Toolbar>
@@ -276,35 +278,37 @@ function App() {
 				open={drawerOpen}
 			>
 				<Toolbar />
-				<Toolbar>
-					<div className='w-full flex justify-between items-center'>
-						<h1 className='text-lg truncate mr-3'>
-							Modify Node - {selectedNode?.attributes.value}
-						</h1>
-						<IconButton
-							color='inherit'
-							aria-label='open drawer'
-							onClick={handleDrawerClose}
-							edge='start'
-						>
-							<CloseIcon />
-						</IconButton>
-					</div>
-				</Toolbar>
-				<Divider />
-				<div className='my-4'>
-					{selectedNode && (
-						<div>
-							<EditNodeForm
-								selectedNode={selectedNode}
-								onSubmit={handleUpdateSelectedNode}
-								onDelete={handleDeleteNode}
-								onInvert={handleInvertNode}
-								onShift={handleShift}
-							/>
+				<Box sx={{ overflow: 'auto' }}>
+					<Toolbar>
+						<div className='w-full flex justify-between items-center'>
+							<h1 className='text-lg truncate mr-3'>
+								Modify Node - {selectedNode?.attributes.value}
+							</h1>
+							<IconButton
+								color='inherit'
+								aria-label='open drawer'
+								onClick={handleDrawerClose}
+								edge='start'
+							>
+								<CloseIcon />
+							</IconButton>
 						</div>
-					)}
-				</div>
+					</Toolbar>
+					<Divider />
+					<div className='my-4'>
+						{selectedNode && (
+							<div>
+								<EditNodeForm
+									selectedNode={selectedNode}
+									onSubmit={handleUpdateSelectedNode}
+									onDelete={handleDeleteNode}
+									onInvert={handleInvertNode}
+									onShift={handleShift}
+								/>
+							</div>
+						)}
+					</div>
+				</Box>
 			</Drawer>
 			{tree && treeSettings && (
 				<div className='pt-40' ref={imageRef}>
