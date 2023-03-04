@@ -13,13 +13,13 @@ function TreeGraph({
 	tree,
 	treeSettings,
 	zoom,
-	onNodeClick,
+	OnClickNode,
 	onAddNode,
 }: {
 	tree: Tree;
 	treeSettings: TreeSettings;
 	zoom: number;
-	onNodeClick: (node: TreeNode) => void;
+	OnClickNode: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
 	const [_width, _height] = useWindowResize();
@@ -92,7 +92,7 @@ function TreeGraph({
 						node={node}
 						zoom={zoom}
 						onAddNode={onAddNode}
-						onNodeClick={onNodeClick}
+						OnClickNode={OnClickNode}
 					/>
 				</div>
 				<Line

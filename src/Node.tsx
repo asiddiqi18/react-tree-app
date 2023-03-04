@@ -9,11 +9,11 @@ export default function Node({
 	node,
 	zoom,
 	onAddNode,
-	onNodeClick,
+	OnClickNode,
 }: {
 	node: TreeNode;
 	zoom: number;
-	onNodeClick: (node: TreeNode) => void;
+	OnClickNode: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
 	const [hover, setHover] = useState<boolean>(false);
@@ -32,7 +32,7 @@ export default function Node({
 				backgroundColor: node.attributes.backgroundColor,
 				color: node.attributes.textColor,
 			}}
-			onClick={() => onNodeClick(node)}
+			onClick={() => OnClickNode(node)}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
 		>

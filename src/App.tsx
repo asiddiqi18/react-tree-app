@@ -314,7 +314,7 @@ function App() {
 				<div className='pt-40' ref={imageRef}>
 					<div>
 						<TreeGraph
-							onNodeClick={handleNodeClick}
+							OnClickNode={handleNodeClick}
 							onAddNode={handleAddNode}
 							tree={tree}
 							treeSettings={treeSettings}
