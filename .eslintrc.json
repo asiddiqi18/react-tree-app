@@ -17,7 +17,7 @@
 	},
 	"plugins": ["react", "@typescript-eslint"],
 	"rules": {
-		"indent": ["error", "tab", { "SwitchCase": 1 }],
+		"indent": ["warn", "tab", { "SwitchCase": 1 }],
 		"quotes": ["error", "single"],
 		"semi": ["error", "always"]
 	}
