@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	Button,
-	ButtonGroup,
-	FormControlLabel,
 	InputAdornment,
 	Stack,
 	TextField,
@@ -14,7 +12,7 @@ import {
 	ToggleButtonGroup,
 } from '@mui/material';
 
-import { GenerateRandomTreeSettings, ScreenshotSettings } from '../types';
+import { ScreenshotSettings } from '../types';
 
 const schema = yup.object().shape({
 	format: yup.string().required(),
@@ -30,7 +28,6 @@ function TakeScreenshotForm({
 		control,
 		handleSubmit,
 		getValues,
-		setValue,
 		watch,
 		formState: { errors },
 	} = useForm<ScreenshotSettings>({
