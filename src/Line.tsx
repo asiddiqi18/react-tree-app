@@ -93,7 +93,8 @@ const LineTo: React.FC<LineProps> = ({
 
 	return (
 		<div
-			className='line absolute pointer-events-none'
+			id={`${id}-line`}
+			className='absolute pointer-events-none'
 			style={{
 				left: left + window.pageXOffset,
 				top: top + window.pageYOffset,

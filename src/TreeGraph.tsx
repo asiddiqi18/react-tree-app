@@ -34,7 +34,11 @@ function TreeGraph({
 		return (
 			<>
 				{node.children && node.children.length > 0 && (
-					<div className='flex' style={{ columnGap: zoom * 16 }}>
+					<div
+						id={`${node.attributes.value}-forest`}
+						className='flex'
+						style={{ columnGap: zoom * 16 }}
+					>
 						{node.children.map((child, index) => (
 							<div
 								id={`${node.attributes.value}-children-${index}`}
