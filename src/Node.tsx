@@ -8,11 +8,13 @@ import { TreeNode } from './tree';
 export default function Node({
 	node,
 	zoom,
+	reverse,
 	onAddNode,
 	OnClickNode,
 }: {
 	node: TreeNode;
 	zoom: number;
+	reverse: boolean;
 	OnClickNode: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
@@ -21,6 +23,29 @@ export default function Node({
 	const handlePlusClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		event.stopPropagation();
 		onAddNode(node);
+	};
+
+	const addButton = () => {
+		if (hover) {
+			return (
+				<IconButton
+					onClick={(e) => handlePlusClick(e)}
+					color='success'
+					sx={{
+						'&:hover': {
+							backgroundColor: '#81c784',
+						},
+						height: zoom * 18,
+						width: zoom * 18,
+						bottom: 0,
+						padding: zoom * 1.4,
+					}}
+				>
+					<AddIcon />
+				</IconButton>
+			);
+		}
+		return <></>;
 	};
 
 	return (
@@ -37,7 +62,7 @@ export default function Node({
 			onMouseLeave={() => setHover(false)}
 		>
 			<div className='flex flex-col justify-between items-center h-full'>
-				<div className='flex-1'></div>
+				<div className='flex-1'>{reverse && addButton()}</div>
 				<p
 					className='pt-1 flex-1 break-words'
 					style={{
@@ -46,25 +71,7 @@ export default function Node({
 				>
 					{node.attributes.value}
 				</p>
-				<div className='flex-1'>
-					{hover && (
-						<IconButton
-							onClick={(e) => handlePlusClick(e)}
-							color='success'
-							sx={{
-								'&:hover': {
-									backgroundColor: '#81c784',
-								},
-								height: zoom * 18,
-								width: zoom * 18,
-								bottom: 0,
-								padding: zoom * 1.4,
-							}}
-						>
-							<AddIcon />
-						</IconButton>
-					)}
-				</div>
+				<div className='flex-1'>{!reverse && addButton()}</div>
 			</div>
 		</div>
 	);

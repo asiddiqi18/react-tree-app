@@ -15,6 +15,7 @@ export type TreeSettings = {
 	backgroundColor: string;
 	levelHeight: number;
 	siblingSpace: number;
+	reverse: boolean;
 };
 
 export type LineAttributes = {

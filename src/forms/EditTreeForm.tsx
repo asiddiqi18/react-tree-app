@@ -4,7 +4,13 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Stack, TextField } from '@mui/material';
+import {
+	Button,
+	Checkbox,
+	FormControlLabel,
+	Stack,
+	TextField,
+} from '@mui/material';
 
 import { TreeSettings } from '../types';
 
@@ -46,6 +52,7 @@ function EditTreeForm({
 			setValue('backgroundColor', treeSettings.backgroundColor);
 			setValue('levelHeight', treeSettings.levelHeight);
 			setValue('siblingSpace', treeSettings.siblingSpace);
+			setValue('reverse', treeSettings.reverse);
 		}
 	}, [treeSettings]);
 
@@ -108,6 +115,17 @@ function EditTreeForm({
 							inputProps={{
 								step: '10',
 							}}
+						/>
+					)}
+				/>
+				<Controller
+					control={control}
+					name='reverse'
+					defaultValue={false}
+					render={({ field }) => (
+						<FormControlLabel
+							label='Vertically reverse tree'
+							control={<Checkbox {...field} checked={field.value} />}
 						/>
 					)}
 				/>
