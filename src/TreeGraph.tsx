@@ -42,6 +42,11 @@ function TreeGraph({
 						{node.children.map((child, index) => (
 							<div
 								id={`${node.attributes.value}-children-${index}`}
+								className={
+									treeSettings.reverse
+										? 'flex flex-col justify-end'
+										: 'flex flex-col'
+								}
 								key={child.id}
 							>
 								<NodeTree node={child} parentRef={parentRef} />
@@ -81,7 +86,14 @@ function TreeGraph({
 		const hasChildren = node.children?.length > 0;
 
 		return (
-			<div id={node.attributes.value} className='flex flex-col items-center'>
+			<div
+				id={node.attributes.value}
+				className={
+					treeSettings.reverse
+						? 'flex flex-col-reverse items-center'
+						: 'flex flex-col items-center'
+				}
+			>
 				<div
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
@@ -95,6 +107,7 @@ function TreeGraph({
 					<Node
 						node={node}
 						zoom={zoom}
+						reverse={treeSettings.reverse}
 						onAddNode={onAddNode}
 						OnClickNode={OnClickNode}
 					/>

@@ -1,5 +1,6 @@
 {
 	"backgroundColor": "#ffffff",
 	"levelHeight": 48,
-	"siblingSpace": 5
+	"siblingSpace": 5,
+	"reverse": false
 }
