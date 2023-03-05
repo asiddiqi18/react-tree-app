@@ -16,10 +16,11 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
 	message,
 	showClose = false,
 	onClose,
+
 	type,
 }) => {
 	const handleClose = (
-		event: Event | React.SyntheticEvent<any, Event>,
+		event: React.SyntheticEvent | Event,
 		reason?: string
 	) => {
 		if (reason === 'clickaway') {
@@ -30,16 +31,16 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
 
 	const snackbarColor = () => {
 		switch (type) {
-		case 'success':
-			return 'green';
-		case 'info':
-			return 'gray';
-		case 'warning':
-			return 'orange';
-		case 'error':
-			return 'red';
-		default:
-			return 'black';
+			case 'success':
+				return 'green';
+			case 'info':
+				return 'gray';
+			case 'warning':
+				return 'orange';
+			case 'error':
+				return 'red';
+			default:
+				return 'black';
 		}
 	};
 	return (

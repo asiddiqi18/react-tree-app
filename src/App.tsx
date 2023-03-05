@@ -5,22 +5,19 @@ import { Options } from 'html-to-image/lib/types';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Add, Remove, ZoomIn, ZoomOut } from '@mui/icons-material';
+import { Add, Remove } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
 	AppBar,
 	Box,
-	Button,
 	Divider,
 	Drawer,
 	Fab,
 	IconButton,
-	Snackbar,
 	Toolbar,
 	Typography,
 } from '@mui/material';
@@ -109,33 +106,33 @@ function App() {
 			}
 
 			switch (settings.format) {
-			case 'PNG':
-				toPng(imageRef.current, options)
-					.then((dataUrl) => {
-						createImage(dataUrl);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-				break;
-			case 'JPEG':
-				toJpeg(imageRef.current, options)
-					.then((dataUrl) => {
-						createImage(dataUrl);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-				break;
-			case 'SVG':
-				toSvg(imageRef.current, options)
-					.then((dataUrl) => {
-						createImage(dataUrl);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-				break;
+				case 'PNG':
+					toPng(imageRef.current, options)
+						.then((dataUrl) => {
+							createImage(dataUrl);
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+					break;
+				case 'JPEG':
+					toJpeg(imageRef.current, options)
+						.then((dataUrl) => {
+							createImage(dataUrl);
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+					break;
+				case 'SVG':
+					toSvg(imageRef.current, options)
+						.then((dataUrl) => {
+							createImage(dataUrl);
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+					break;
 			}
 		},
 		[imageRef]
@@ -169,7 +166,7 @@ function App() {
 
 	const handleUpdateSelectedNode = (data: TreeNodeAttributes) => {
 		if (selectedNode && tree) {
-			const updatedTree: Tree = cloneTree(tree); // clone tree
+			const updatedTree: Tree = cloneTree(tree);
 			updatedTree.updateNode(selectedNode, data);
 			updateTree(updatedTree);
 		}
