@@ -1,15 +1,7 @@
 import React from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
-import {
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	IconButton,
-} from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
 
 import TakeScreenshotForm from '../forms/TakeScreenshotForm';
 import { ScreenshotSettings } from '../types';
