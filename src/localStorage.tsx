@@ -21,8 +21,14 @@ export const getDataFromLocal = (): LocalData | null => {
 		if (parsed.treeSettings) {
 			treeSettingsParsed = parsed.treeSettings;
 		}
+		const tree = Tree.deserialize(parsed.tree);
+
+		if (!tree) {
+			return null;
+		}
+
 		return {
-			tree: Tree.deserialize(parsed.tree),
+			tree: tree,
 			treeSettings: treeSettingsParsed,
 		};
 	}

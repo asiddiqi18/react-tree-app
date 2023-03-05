@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 
 import Line from './Line';
+import Node from './Node';
 import { Tree, TreeNode } from './tree';
 import { TreeSettings } from './types';
 import { useWindowResize } from './useWindowSize';
@@ -11,63 +12,17 @@ import { useWindowResize } from './useWindowSize';
 function TreeGraph({
 	tree,
 	treeSettings,
-	onNodeClick,
+	zoom,
+	OnClickNode,
 	onAddNode,
 }: {
 	tree: Tree;
 	treeSettings: TreeSettings;
-	onNodeClick: (node: TreeNode) => void;
+	zoom: number;
+	OnClickNode: (node: TreeNode) => void;
 	onAddNode: (node: TreeNode) => void;
 }) {
 	const [_width, _height] = useWindowResize();
-
-	function Node({ node }: { node: TreeNode }) {
-		const [hover, setHover] = useState<boolean>(false);
-
-		const handlePlusClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-			event.stopPropagation();
-			onAddNode(node);
-		};
-
-		return (
-			<div
-				className='hover:brightness-95 rounded-[50%] hover:shadow-xl px-2 flex justify-center items-center text-center cursor-pointer'
-				style={{
-					width: node.attributes.nodeWidth,
-					height: node.attributes.nodeHeight,
-					backgroundColor: node.attributes.backgroundColor,
-					color: node.attributes.textColor,
-				}}
-				onClick={() => onNodeClick(node)}
-				onMouseEnter={() => setHover(true)}
-				onMouseLeave={() => setHover(false)}
-			>
-				<div className='flex flex-col justify-between items-center h-full'>
-					<div className='flex-1'></div>
-					<p className='pt-1 flex-1 break-words'>{node.attributes.value}</p>
-					<div className='flex-1'>
-						{hover && (
-							<IconButton
-								onClick={(e) => handlePlusClick(e)}
-								color='success'
-								sx={{
-									'&:hover': {
-										backgroundColor: '#81c784',
-									},
-									height: 16,
-									width: 16,
-									bottom: 0,
-									padding: 1.5,
-								}}
-							>
-								<AddIcon />
-							</IconButton>
-						)}
-					</div>
-				</div>
-			</div>
-		);
-	}
 
 	function NodeForest({
 		node,
@@ -79,7 +34,11 @@ function TreeGraph({
 		return (
 			<>
 				{node.children && node.children.length > 0 && (
-					<div className='flex gap-x-4'>
+					<div
+						id={`${node.attributes.value}-forest`}
+						className='flex'
+						style={{ columnGap: zoom * 16 }}
+					>
 						{node.children.map((child, index) => (
 							<div
 								id={`${node.attributes.value}-children-${index}`}
@@ -127,19 +86,25 @@ function TreeGraph({
 					ref={nodeRef}
 					id={`${node.attributes.value}-node`}
 					style={{
-						marginTop: treeSettings.levelHeight / 2,
-						marginBottom: treeSettings.levelHeight / 2,
-						marginLeft: treeSettings.siblingSpace / 2,
-						marginRight: treeSettings.siblingSpace / 2,
+						marginTop: zoom * (treeSettings.levelHeight / 2),
+						marginBottom: zoom * (treeSettings.levelHeight / 2),
+						marginLeft: zoom * (treeSettings.siblingSpace / 2),
+						marginRight: zoom * (treeSettings.siblingSpace / 2),
 					}}
 				>
-					<Node node={node} />
+					<Node
+						node={node}
+						zoom={zoom}
+						onAddNode={onAddNode}
+						OnClickNode={OnClickNode}
+					/>
 				</div>
 				<Line
 					id={node.id}
 					key={node.id}
 					fromRect={fromRect}
 					toRect={toRect}
+					zoom={zoom}
 					{...node.attributes.lineAttributes}
 				/>
 				{hasChildren && <NodeForest node={node} parentRef={nodeRef} />}

@@ -5,6 +5,7 @@ import { Options } from 'html-to-image/lib/types';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Add, Remove, ZoomIn, ZoomOut } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -13,16 +14,19 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import {
 	AppBar,
+	Box,
 	Button,
 	Divider,
 	Drawer,
 	Fab,
 	IconButton,
+	Snackbar,
 	Toolbar,
 	Typography,
 } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
+import CustomSnackbar from './CustomSnackbar';
 import EditNodeForm from './forms/EditNodeForm';
 import { getDataFromLocal, saveDataToLocal } from './localStorage';
 import ConfirmDeleteModal from './modals/ConfirmDeleteModal';
@@ -41,8 +45,8 @@ import {
 	TreeSettings,
 } from './types';
 
-function createTreeObj() {
-	return Tree.deserialize(EmptyTree);
+export function createEmptyTree() {
+	return Tree.deserialize(EmptyTree)!;
 }
 
 function cloneTree(tree: Tree): Tree {
@@ -55,6 +59,8 @@ function App() {
 	const [tree, setTree] = useState<Tree>();
 	const [selectedNode, setSelectedNode] = useState<TreeNode>();
 	const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+	const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
+	const [snackBarMessage, setSnackBarMessage] = useState<string>('');
 	const [treeSettingsDialogOpen, setTreeSettingsDialogOpen] =
 		useState<boolean>(false);
 	const [randomTreeSettingsDialogOpen, setRandomTreeSettingsDialogOpen] =
@@ -63,6 +69,7 @@ function App() {
 		useState<boolean>(false);
 	const [screenshotDialogOpen, setScreenshotDialogOpen] =
 		useState<boolean>(false);
+	const [zoom, setZoom] = useState<number>(1);
 	const [treeSettings, setTreeSettings] = useState<TreeSettings>();
 	const [randomTreeSettings, setRandomTreeSettings] =
 		useState<GenerateRandomTreeSettings>({ numberOfNodes: 16 });
@@ -76,7 +83,7 @@ function App() {
 			const importedTree = cloneTree(tree1);
 			setTree(importedTree);
 		} else {
-			setTree(createTreeObj());
+			setTree(createEmptyTree());
 		}
 		if (treeObj?.treeSettings) {
 			setTreeSettings(treeObj?.treeSettings);
@@ -91,7 +98,7 @@ function App() {
 				return;
 			}
 
-			const options: Options = { cacheBust: true, height: 1000 };
+			const options: Options = { cacheBust: true };
 
 			function createImage(dataUrl: string) {
 				const link = document.createElement('a');
@@ -236,12 +243,19 @@ function App() {
 	if (!tree || !treeSettings) {
 		return <></>;
 	}
+
+	const showSnackBar = (message: string) => {
+		setSnackBarMessage(message);
+		setSnackBarOpen(true);
+	};
+
 	return (
 		<div
-			className='h-screen w-screen min-w-max'
+			className='h-screen min-w-max'
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
 			<AppBar
+				position='fixed'
 				sx={{ bgcolor: '#739574', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 			>
 				<Toolbar>
@@ -250,7 +264,6 @@ function App() {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-
 			<Drawer
 				sx={{
 					width: drawerWidth,
@@ -265,85 +278,90 @@ function App() {
 				open={drawerOpen}
 			>
 				<Toolbar />
-				<Toolbar>
-					<div className='w-full flex justify-between items-center'>
-						<h1 className='text-lg truncate mr-3'>
-							Modify Node - {selectedNode?.attributes.value}
-						</h1>
-						<IconButton
-							color='inherit'
-							aria-label='open drawer'
-							onClick={handleDrawerClose}
-							edge='start'
-						>
-							<CloseIcon />
-						</IconButton>
-					</div>
-				</Toolbar>
-				<Divider />
-				<div className='my-4'>
-					{selectedNode && (
-						<div>
-							<EditNodeForm
-								selectedNode={selectedNode}
-								onSubmit={handleUpdateSelectedNode}
-								onDelete={handleDeleteNode}
-								onInvert={handleInvertNode}
-								onShift={handleShift}
-							/>
+				<Box sx={{ overflow: 'auto' }}>
+					<Toolbar>
+						<div className='w-full flex justify-between items-center'>
+							<h1 className='text-lg truncate mr-3'>
+								Modify Node - {selectedNode?.attributes.value}
+							</h1>
+							<IconButton
+								color='inherit'
+								aria-label='open drawer'
+								onClick={handleDrawerClose}
+								edge='start'
+							>
+								<CloseIcon />
+							</IconButton>
 						</div>
-					)}
-				</div>
+					</Toolbar>
+					<Divider />
+					<div className='my-4'>
+						{selectedNode && (
+							<div>
+								<EditNodeForm
+									selectedNode={selectedNode}
+									onSubmit={handleUpdateSelectedNode}
+									onDelete={handleDeleteNode}
+									onInvert={handleInvertNode}
+									onShift={handleShift}
+								/>
+							</div>
+						)}
+					</div>
+				</Box>
 			</Drawer>
-
 			{tree && treeSettings && (
 				<div className='pt-40' ref={imageRef}>
-					<TreeGraph
-						onNodeClick={handleNodeClick}
-						onAddNode={handleAddNode}
-						tree={tree}
-						treeSettings={treeSettings}
-					/>
+					<div>
+						<TreeGraph
+							OnClickNode={handleNodeClick}
+							onAddNode={handleAddNode}
+							tree={tree}
+							treeSettings={treeSettings}
+							zoom={zoom}
+						/>
+					</div>
 				</div>
 			)}
-
 			<TreeSettingsModal
 				open={treeSettingsDialogOpen}
 				treeSettings={treeSettings}
 				handleClose={() => setTreeSettingsDialogOpen(false)}
 				handleUpdateTreeSettings={handleUpdateTreeSettings}
 			/>
-
 			<GenerateTreeModal
 				open={randomTreeSettingsDialogOpen}
 				randomTreeSettings={randomTreeSettings}
 				handleClose={() => setRandomTreeSettingsDialogOpen(false)}
 				handleUpdateRandomTreeSettings={handleUpdateRandomTreeSettings}
 			/>
-
 			<ConfirmDeleteModal
 				open={confirmDeleteDialogOpen}
 				handleClose={() => setConfirmDeleteDialogOpen(false)}
 				handleDeleteTree={() => {
 					if (tree) {
-						const treeObj = createTreeObj();
+						const treeObj = createEmptyTree();
 						updateTree(treeObj);
 					}
 					setConfirmDeleteDialogOpen(false);
 					setDrawerOpen(false);
 				}}
 			/>
-
 			<TakeScreenshotModal
 				open={screenshotDialogOpen}
 				handleClose={() => setScreenshotDialogOpen(false)}
 				handleChooseFormat={(data: ScreenshotSettings) => {
-					console.log(data);
 					handleScreenshotButtonClick(data);
 				}}
 			/>
+			<CustomSnackbar
+				open={snackBarOpen}
+				message={snackBarMessage}
+				onClose={() => setSnackBarOpen(false)}
+				type='info'
+			/>
 
-			<div className='fixed bottom-4 left-4 z-20'>
+			<div className='flex w-full px-4 justify-between fixed bottom-4 left-0 z-20'>
 				<div className='flex gap-5'>
 					<Tooltip title='Delete'>
 						<Fab color='error' onClick={() => setConfirmDeleteDialogOpen(true)}>
@@ -374,6 +392,34 @@ function App() {
 							onClick={() => setTreeSettingsDialogOpen(true)}
 						>
 							<SettingsIcon />
+						</Fab>
+					</Tooltip>
+				</div>
+				<div className='flex gap-5'>
+					<Tooltip title='Zoom in'>
+						<Fab
+							color='warning'
+							disabled={zoom === 2}
+							onClick={() => {
+								const newZoom = Math.min(zoom + 0.25, 2);
+								setZoom(newZoom);
+								showSnackBar(`Zoomed in (x${newZoom})`);
+							}}
+						>
+							<Add />
+						</Fab>
+					</Tooltip>
+					<Tooltip title='Zoom out'>
+						<Fab
+							color='warning'
+							disabled={zoom === 0.25}
+							onClick={() => {
+								const newZoom = Math.max(zoom - 0.25, 0.25);
+								setZoom(newZoom);
+								showSnackBar(`Zoomed out (x${newZoom})`);
+							}}
+						>
+							<Remove />
 						</Fab>
 					</Tooltip>
 				</div>
