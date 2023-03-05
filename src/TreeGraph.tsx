@@ -1,8 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 
-import AddIcon from '@mui/icons-material/Add';
-import { IconButton } from '@mui/material';
-
 import Line from './Line';
 import Node from './Node';
 import { Tree, TreeNode } from './tree';
@@ -70,6 +67,7 @@ function TreeGraph({
 		const [fromRect, setFromRect] = useState<DOMRect | null>(null);
 		const [toRect, setToRect] = useState<DOMRect | null>(null);
 		const [width, height] = useWindowResize();
+		const hasChildren = node.children?.length > 0;
 
 		useEffect(() => {
 			if (!parentRef) {
@@ -82,8 +80,6 @@ function TreeGraph({
 				setFromRect(parentRef.current.getBoundingClientRect());
 			}
 		}, [nodeRef, parentRef, width, height]);
-
-		const hasChildren = node.children?.length > 0;
 
 		return (
 			<div
@@ -125,18 +121,16 @@ function TreeGraph({
 		);
 	}
 
-	function RenderNode({ node }: { node: TreeNode }) {
-		return (
-			<NodeTree key={node.attributes.value} node={node} parentRef={null} />
-		);
-	}
-
 	return (
 		<div
 			className='flex justify-center items-center'
 			style={{ backgroundColor: treeSettings.backgroundColor }}
 		>
-			<RenderNode node={tree.root} />
+			<NodeTree
+				key={tree.root.attributes.value}
+				node={tree.root}
+				parentRef={null}
+			/>
 		</div>
 	);
 }

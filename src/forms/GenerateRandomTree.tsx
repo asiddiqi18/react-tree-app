@@ -23,15 +23,10 @@ function EditRandomTreeForm({
 	randomTreeSettings: GenerateRandomTreeSettings;
 	onSubmit: (data: GenerateRandomTreeSettings) => void;
 }) {
-	const {
-		control,
-		handleSubmit,
-		getValues,
-		setValue,
-		formState: { errors },
-	} = useForm<GenerateRandomTreeSettings>({
-		resolver: yupResolver(schema),
-	});
+	const { control, handleSubmit, setValue } =
+		useForm<GenerateRandomTreeSettings>({
+			resolver: yupResolver(schema),
+		});
 
 	useEffect(() => {
 		if (randomTreeSettings) {

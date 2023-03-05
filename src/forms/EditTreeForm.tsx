@@ -37,13 +37,7 @@ function EditTreeForm({
 	treeSettings: TreeSettings;
 	onSubmit: (data: TreeSettings) => void;
 }) {
-	const {
-		control,
-		handleSubmit,
-		getValues,
-		setValue,
-		formState: { errors },
-	} = useForm<TreeSettings>({
+	const { control, handleSubmit, setValue } = useForm<TreeSettings>({
 		resolver: yupResolver(schema),
 	});
 
