@@ -91,8 +91,6 @@ const LineTo: React.FC<LineProps> = ({
 
 	const url = `arrowhead-${id}`;
 
-	console.log(fromRect, toRect);
-
 	return (
 		<div
 			className='line absolute pointer-events-none'

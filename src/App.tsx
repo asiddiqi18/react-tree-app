@@ -351,7 +351,6 @@ function App() {
 				open={screenshotDialogOpen}
 				handleClose={() => setScreenshotDialogOpen(false)}
 				handleChooseFormat={(data: ScreenshotSettings) => {
-					console.log(data);
 					handleScreenshotButtonClick(data);
 				}}
 			/>
