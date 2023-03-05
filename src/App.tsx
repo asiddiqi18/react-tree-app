@@ -195,7 +195,7 @@ function App() {
 				return;
 			}
 			const updatedTree: Tree = cloneTree(tree);
-			updatedTree.addNode(node, 'new');
+			updatedTree.addNode(node, 'node' + tree.nextId);
 			updateTree(updatedTree);
 		},
 		[tree]
